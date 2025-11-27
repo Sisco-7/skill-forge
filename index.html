@@ -1,0 +1,1769 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>SkillForge</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+body{box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;width:100%;}
+:root{--bg-primary:#f8fafc;--bg-secondary:#ffffff;--bg-tertiary:#f1f5f9;--text-primary:#0f172a;--text-secondary:#475569;--text-tertiary:#94a3b8;--accent-primary:#3b82f6;--accent-secondary:#8b5cf6;--accent-hover:#2563eb;--border-color:#e2e8f0;--shadow:rgba(0,0,0,0.1);--success:#10b981;--warning:#f59e0b;--error:#ef4444;}
+body.dark-mode{--bg-primary:#0f172a;--bg-secondary:#1e293b;--bg-tertiary:#334155;--text-primary:#f1f5f9;--text-secondary:#cbd5e1;--text-tertiary:#64748b;--accent-primary:#60a5fa;--accent-secondary:#a78bfa;--accent-hover:#3b82f6;--border-color:#334155;--shadow:rgba(0,0,0,0.3);}
+body.sunset-mode{--bg-primary:#fff1f2;--bg-secondary:#ffe4e6;--bg-tertiary:#fecdd3;--text-primary:#881337;--text-secondary:#be123c;--text-tertiary:#fb7185;--accent-primary:#f43f5e;--accent-secondary:#fb923c;--accent-hover:#e11d48;--border-color:#fda4af;--shadow:rgba(244,63,94,0.15);}
+body.nature-mode{--bg-primary:#f0fdf4;--bg-secondary:#dcfce7;--bg-tertiary:#bbf7d0;--text-primary:#14532d;--text-secondary:#15803d;--text-tertiary:#4ade80;--accent-primary:#22c55e;--accent-secondary:#eab308;--accent-hover:#16a34a;--border-color:#86efac;--shadow:rgba(34,197,94,0.15);}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg-primary);color:var(--text-primary);transition:background 0.3s,color 0.3s;overflow-x:hidden;}
+#splashScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#667eea 0%,#ec4899 50%,#764ba2 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10000;opacity:1;transition:opacity 0.5s;overflow:hidden;}
+#splashScreen.fade-out{opacity:0;pointer-events:none;}
+.splash-particles{position:absolute;width:100%;height:100%;overflow:hidden;}
+.particle{position:absolute;background:rgba(255,255,255,0.3);border-radius:50%;animation:float 6s infinite ease-in-out;}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-30px) rotate(180deg);}}
+.splash-logo{font-size:4.5rem;font-weight:900;color:white;margin-bottom:1rem;animation:slideDown 0.8s,pulse 2s 0.8s infinite;display:flex;align-items:center;gap:1.5rem;position:relative;z-index:2;}
+.splash-icon{width:100px;height:100px;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border-radius:25px;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:900;color:white;box-shadow:0 20px 60px rgba(0,0,0,0.3);border:3px solid rgba(255,255,255,0.3);}
+.mercury-symbol{width:60px;height:60px;stroke:white;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-80px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+.splash-tagline{font-size:1.5rem;color:rgba(255,255,255,0.95);margin-bottom:3rem;animation:fadeIn 1s 0.4s both;position:relative;z-index:2;font-weight:500;text-shadow:0 2px 10px rgba(0,0,0,0.2);}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.splash-loader{display:flex;gap:0.75rem;animation:fadeIn 1s 0.7s both;position:relative;z-index:2;}
+.splash-dot{width:16px;height:16px;background:white;border-radius:50%;animation:bounce 1.4s infinite ease-in-out both;box-shadow:0 5px 15px rgba(0,0,0,0.2);}
+.splash-dot:nth-child(1){animation-delay:-0.32s;}
+.splash-dot:nth-child(2){animation-delay:-0.16s;background:#fbbf24;}
+.splash-dot:nth-child(3){background:#f472b6;}
+@keyframes bounce{0%,80%,100%{transform:scale(0);}40%{transform:scale(1.2);}}
+#app{display:none;min-height:100%;width:100%;padding-top:80px;}
+#app.loaded{display:block;}
+.app-header{position:fixed;top:0;left:0;right:0;height:80px;background:var(--bg-secondary);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;z-index:999;transition:background 0.3s;}
+.header-left{display:flex;align-items:center;gap:1rem;}
+.header-logo{display:flex;align-items:center;gap:0.75rem;font-size:1.5rem;font-weight:800;color:var(--accent-primary);text-decoration:none;}
+.header-logo-icon{width:50px;height:50px;background:var(--accent-primary);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:1.25rem;}
+.header-logo-icon svg{width:30px;height:30px;stroke:white;fill:none;stroke-width:3;}
+.header-right{display:flex;align-items:center;gap:1.5rem;}
+.header-avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:1.25rem;cursor:pointer;border:3px solid var(--bg-tertiary);box-shadow:0 4px 12px var(--shadow);transition:transform 0.2s;overflow:hidden;}
+.header-avatar:hover{transform:scale(1.05);}
+.header-avatar img{width:100%;height:100%;object-fit:cover;}
+.app-wrapper{display:flex;min-height:100%;width:100%;}
+.side-nav{position:fixed;left:0;top:80px;height:calc(100% - 80px);width:280px;background:var(--bg-secondary);border-right:1px solid var(--border-color);padding:2rem 0;transition:transform 0.3s;z-index:998;overflow-y:auto;}
+.nav-items{list-style:none;padding:0 1rem;}
+.nav-item{margin-bottom:0.5rem;}
+.nav-link{display:flex;align-items:center;gap:1rem;padding:0.875rem 1rem;color:var(--text-secondary);text-decoration:none;border-radius:0.75rem;transition:all 0.2s;font-weight:500;cursor:pointer;}
+.nav-link:hover{background:var(--bg-tertiary);color:var(--text-primary);}
+.nav-link.active{background:var(--accent-primary);color:white;}
+.nav-icon{width:24px;height:24px;min-width:24px;}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;width:100%;background:var(--bg-secondary);border-top:1px solid var(--border-color);padding:0.75rem 0;z-index:1000;}
+.bottom-nav-items{display:flex;justify-content:space-around;align-items:center;list-style:none;}
+.bottom-nav-link{display:flex;flex-direction:column;align-items:center;gap:0.25rem;color:var(--text-secondary);text-decoration:none;font-size:0.75rem;font-weight:500;cursor:pointer;padding:0.5rem 1rem;border-radius:0.5rem;transition:all 0.2s;}
+.bottom-nav-link:hover,.bottom-nav-link.active{color:var(--accent-primary);}
+.bottom-nav-icon{width:24px;height:24px;}
+.main-content{flex:1;margin-left:280px;padding:2rem;width:100%;padding-bottom:2rem;position:relative;}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+.page-title{font-size:2rem;font-weight:700;margin-bottom:0.5rem;}
+.page-subtitle{color:var(--text-secondary);}
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:2rem;}
+.stat-card{background:var(--bg-secondary);padding:1.5rem;border-radius:1rem;border:1px solid var(--border-color);display:flex;align-items:center;gap:1rem;}
+.stat-icon{font-size:1.5rem;width:60px;height:60px;display:flex;align-items:center;justify-content:center;background:var(--bg-tertiary);border-radius:0.75rem;}
+.stat-icon svg{width:32px;height:32px;stroke:var(--accent-primary);fill:none;stroke-width:2;}
+.stat-content h3{font-size:1.75rem;font-weight:700;}
+.stat-content p{color:var(--text-secondary);font-size:0.875rem;}
+.segment-tabs{display:flex;gap:1rem;margin-bottom:2rem;overflow-x:auto;padding-bottom:0.5rem;}
+.segment-tab{padding:0.75rem 1.5rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:2rem;color:var(--text-secondary);font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.3s;}
+.segment-tab:hover{border-color:var(--accent-primary);color:var(--accent-primary);}
+.segment-tab.active{background:var(--accent-primary);border-color:var(--accent-primary);color:white;}
+.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;}
+.course-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:1rem;overflow:hidden;transition:all 0.3s;cursor:pointer;}
+.course-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px var(--shadow);}
+.course-thumbnail{height:180px;display:flex;align-items:center;justify-content:center;position:relative;color:white;}
+.course-thumbnail svg{width:80px;height:80px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.2));}
+.course-difficulty{position:absolute;top:1rem;right:1rem;padding:0.375rem 0.75rem;border-radius:1rem;font-size:0.75rem;font-weight:600;text-transform:uppercase;}
+.difficulty-beginner{background:var(--success);color:white;}
+.difficulty-intermediate{background:var(--warning);color:white;}
+.difficulty-advanced{background:var(--error);color:white;}
+.course-content{padding:1.5rem;}
+.course-title{font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
+.course-meta{display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;font-size:0.875rem;color:var(--text-secondary);}
+.course-meta-item{display:flex;align-items:center;gap:0.375rem;}
+.course-progress{margin-bottom:1rem;}
+.progress-bar{height:8px;background:var(--bg-tertiary);border-radius:1rem;overflow:hidden;margin-bottom:0.5rem;}
+.progress-fill{height:100%;background:var(--accent-primary);border-radius:1rem;transition:width 0.3s;}
+.progress-text{font-size:0.875rem;color:var(--text-secondary);}
+.course-cta{width:100%;padding:0.875rem;background:var(--accent-primary);color:white;border:none;border-radius:0.75rem;font-weight:600;cursor:pointer;transition:all 0.3s;position:relative;}
+.course-cta:hover{background:var(--accent-hover);}
+.course-cta:disabled{opacity:0.7;cursor:not-allowed;}
+.course-cta.loading{pointer-events:none;}
+.course-cta.loading::after{content:'';position:absolute;width:16px;height:16px;top:50%;left:50%;margin:-8px 0 0 -8px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 0.6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.course-detail{max-width:1200px;margin:0 auto;}
+.back-button{display:inline-flex;align-items:center;gap:0.5rem;color:var(--text-secondary);text-decoration:none;font-weight:600;margin-bottom:1.5rem;cursor:pointer;transition:color 0.2s;}
+.back-button:hover{color:var(--accent-primary);}
+.course-detail-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:1rem;padding:2rem;margin-bottom:2rem;}
+.lesson-item{padding:1rem 1.5rem;border-top:1px solid var(--border-color);display:flex;align-items:center;gap:1rem;cursor:pointer;transition:background 0.2s;}
+.lesson-item:first-child{border-top:none;}
+.lesson-item:hover{background:var(--bg-tertiary);}
+.lesson-checkbox{width:24px;height:24px;border:2px solid var(--border-color);border-radius:0.375rem;display:flex;align-items:center;justify-content:center;font-size:0.875rem;flex-shrink:0;}
+.lesson-checkbox.completed{background:var(--success);border-color:var(--success);color:white;}
+.lesson-info{flex:1;}
+.lesson-title{font-weight:600;margin-bottom:0.25rem;}
+.lesson-duration{font-size:0.875rem;color:var(--text-secondary);}
+.lesson-reader{max-width:900px;margin:0 auto;}
+.lesson-nav{display:flex;gap:1rem;margin-bottom:2rem;}
+.lesson-nav button{padding:0.75rem 1.5rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:0.75rem;color:var(--text-primary);font-weight:600;cursor:pointer;transition:all 0.3s;position:relative;}
+.lesson-nav button:hover:not(:disabled){background:var(--accent-primary);color:white;border-color:var(--accent-primary);}
+.lesson-nav button:disabled{opacity:0.5;cursor:not-allowed;}
+.lesson-nav button.loading{pointer-events:none;}
+.lesson-nav button.loading::after{content:'';position:absolute;width:16px;height:16px;top:50%;right:1rem;margin-top:-8px;border:2px solid rgba(0,0,0,0.3);border-radius:50%;border-top-color:var(--accent-primary);animation:spin 0.6s linear infinite;}
+.lesson-content-wrapper{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:1rem;padding:3rem;line-height:1.8;}
+.lesson-content-wrapper h1{font-size:2rem;margin-bottom:1.5rem;color:var(--text-primary);}
+.lesson-content-wrapper h2{font-size:1.5rem;margin-top:2rem;margin-bottom:1rem;color:var(--accent-primary);}
+.lesson-content-wrapper h3{font-size:1.25rem;margin-top:1.5rem;margin-bottom:0.75rem;}
+.lesson-content-wrapper p{margin-bottom:1.5rem;color:var(--text-secondary);font-size:1.05rem;}
+.lesson-content-wrapper ul,.lesson-content-wrapper ol{margin-bottom:1.5rem;padding-left:2rem;color:var(--text-secondary);}
+.lesson-content-wrapper li{margin-bottom:0.75rem;line-height:1.6;}
+.lesson-content-wrapper strong{color:var(--text-primary);}
+.profile-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:1rem;padding:2rem;margin-bottom:2rem;}
+.profile-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap;}
+.profile-avatar-large{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:3rem;border:4px solid var(--border-color);cursor:pointer;position:relative;overflow:hidden;transition:transform 0.2s;}
+.profile-avatar-large:hover{transform:scale(1.02);}
+.profile-avatar-large img{width:100%;height:100%;object-fit:cover;}
+.avatar-upload-overlay{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.7);color:white;padding:0.5rem;text-align:center;font-size:0.75rem;opacity:0;transition:opacity 0.2s;}
+.profile-avatar-large:hover .avatar-upload-overlay{opacity:1;}
+.theme-selector{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+.theme-option{padding:1.5rem;border:2px solid var(--border-color);border-radius:0.75rem;cursor:pointer;transition:all 0.3s;text-align:center;}
+.theme-option:hover{border-color:var(--accent-primary);}
+.theme-option.active{border-color:var(--accent-primary);background:var(--bg-tertiary);}
+.theme-preview{width:100%;height:60px;border-radius:0.5rem;margin-bottom:0.75rem;}
+.theme-day{background:linear-gradient(135deg,#f8fafc,#3b82f6);}
+.theme-dark{background:linear-gradient(135deg,#0f172a,#60a5fa);}
+.theme-sunset{background:linear-gradient(135deg,#fff1f2,#f43f5e);}
+.theme-nature{background:linear-gradient(135deg,#f0fdf4,#22c55e);}
+.achievement-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+.certificate-card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:1rem;padding:1.5rem;cursor:pointer;transition:all 0.3s;}
+.certificate-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px var(--shadow);}
+.certificate-preview{width:100%;height:200px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));border-radius:0.75rem;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:1rem;color:white;padding:1.5rem;text-align:center;}
+.cert-icon{font-size:3rem;margin-bottom:1rem;}
+.cert-icon svg{width:60px;height:60px;stroke:white;fill:none;stroke-width:2;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;padding:1rem;animation:fadeIn 0.3s;}
+.modal.active{display:flex;}
+.modal-content{background:var(--bg-secondary);border-radius:1rem;padding:2rem;max-width:500px;width:100%;max-height:90%;overflow-y:auto;animation:slideUp 0.3s;}
+@keyframes slideUp{from{opacity:0;transform:translateY(50px);}to{opacity:1;transform:translateY(0);}}
+.modal-large{max-width:700px;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;}
+.modal-header h2{font-size:1.75rem;}
+.modal-close{background:none;border:none;font-size:2rem;cursor:pointer;padding:0.5rem;color:var(--text-secondary);transition:color 0.2s;line-height:1;}
+.modal-close:hover{color:var(--text-primary);}
+.modal-section{margin-bottom:2rem;}
+.modal-section h3{font-size:1.25rem;margin-bottom:1rem;color:var(--accent-primary);}
+.modal-section p{color:var(--text-secondary);line-height:1.6;margin-bottom:1rem;}
+.modal-section ul{padding-left:1.5rem;color:var(--text-secondary);}
+.modal-section li{margin-bottom:0.5rem;}
+.modal-logo{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding:1.5rem;background:var(--bg-tertiary);border-radius:0.75rem;}
+.modal-logo-icon{width:60px;height:60px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:1.75rem;}
+.form-group{margin-bottom:1.5rem;}
+.form-group label{display:block;margin-bottom:0.5rem;font-weight:600;}
+.form-group input{width:100%;padding:0.875rem;background:var(--bg-primary);border:1px solid var(--border-color);border-radius:0.5rem;color:var(--text-primary);font-size:1rem;}
+.btn{padding:0.875rem 1.5rem;border:none;border-radius:0.75rem;font-weight:600;cursor:pointer;transition:all 0.3s;font-size:1rem;position:relative;}
+.btn-primary{background:var(--accent-primary);color:white;}
+.btn-primary:hover{background:var(--accent-hover);}
+.btn-primary:disabled{opacity:0.7;cursor:not-allowed;}
+.btn-primary.loading{pointer-events:none;}
+.btn-primary.loading::after{content:'';position:absolute;width:16px;height:16px;top:50%;right:1rem;margin-top:-8px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:white;animation:spin 0.6s linear infinite;}
+.btn-secondary{background:var(--bg-tertiary);color:var(--text-primary);}
+.btn-secondary:hover{background:var(--border-color);}
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:0.75rem;padding:1rem 1.5rem;box-shadow:0 8px 16px var(--shadow);z-index:10000;animation:slideIn 0.3s;}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@media (max-width:1024px){
+.side-nav{transform:translateX(-100%);}
+.main-content{margin-left:0;padding:1rem;padding-bottom:8rem;}
+.bottom-nav{display:block;}
+#app{padding-bottom:80px;}
+.page-title{font-size:1.75rem;}
+.stats-bar{grid-template-columns:1fr;}
+.stat-card{padding:1rem;}
+.segment-tabs{gap:0.5rem;padding-bottom:0.5rem;}
+.segment-tab{padding:0.625rem 1rem;font-size:0.875rem;}
+}
+@media (max-width:768px){
+.course-grid{grid-template-columns:1fr;gap:1rem;}
+.lesson-content-wrapper{padding:1rem;font-size:0.95rem;}
+.lesson-content-wrapper h1{font-size:1.5rem;}
+.lesson-content-wrapper h2{font-size:1.25rem;}
+.stats-bar{grid-template-columns:1fr;gap:1rem;}
+.theme-selector{grid-template-columns:1fr;}
+.profile-header{flex-direction:column;text-align:center;}
+.app-header{padding:0 0.75rem;height:70px;}
+#app{padding-top:70px;}
+.header-logo{font-size:1.25rem;}
+.header-logo-icon{width:40px;height:40px;}
+.header-logo-icon svg{width:24px;height:24px;}
+.header-avatar{width:40px;height:40px;font-size:1rem;}
+.page-title{font-size:1.5rem;}
+.page-subtitle{font-size:0.875rem;}
+.modal-content{padding:1.5rem;margin:1rem;}
+.modal-header h2{font-size:1.5rem;}
+.course-detail-card{padding:1.5rem;}
+.lesson-nav{flex-wrap:wrap;gap:0.5rem;}
+.lesson-nav button{padding:0.625rem 1rem;font-size:0.875rem;flex:1;min-width:100px;}
+.empty-state{padding:2rem 1rem;}
+.empty-state-icon svg{width:80px;height:80px;}
+.achievement-grid{grid-template-columns:1fr;}
+.profile-avatar-large{width:100px;height:100px;font-size:2.5rem;}
+.legal-buttons{grid-template-columns:1fr;}
+.splash-logo{font-size:2.5rem;flex-direction:column;gap:1rem;text-align:center;}
+.splash-icon{width:70px;height:70px;font-size:2rem;}
+.splash-tagline{font-size:1.1rem;text-align:center;padding:0 1rem;}
+.back-button{font-size:0.875rem;}
+}
+.hidden{display:none!important;}
+.empty-state{text-align:center;padding:4rem 2rem;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;}
+.empty-state-icon{font-size:4rem;margin-bottom:1.5rem;opacity:0.4;display:flex;align-items:center;justify-content:center;}
+.empty-state-icon svg{width:100px;height:100px;stroke:var(--text-tertiary);fill:none;stroke-width:1.5;}
+.empty-state h2{margin-bottom:1rem;font-size:1.75rem;}
+.empty-state p{max-width:500px;margin:0 auto 2rem;}
+.settings-section{margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border-color);}
+.settings-section:last-child{border-bottom:none;}
+.settings-section h3{margin-bottom:1rem;font-size:1.25rem;}
+.toggle-switch{position:relative;display:inline-block;width:60px;height:34px;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:var(--bg-tertiary);transition:0.4s;border-radius:34px;}
+.toggle-slider:before{position:absolute;content:"";height:26px;width:26px;left:4px;bottom:4px;background-color:white;transition:0.4s;border-radius:50%;}
+input:checked+.toggle-slider{background-color:var(--accent-primary);}
+input:checked+.toggle-slider:before{transform:translateX(26px);}
+.setting-item{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;}
+.setting-label{flex:1;}
+.setting-label h4{margin-bottom:0.25rem;font-size:1rem;}
+.setting-label p{font-size:0.875rem;color:var(--text-secondary);}
+.legal-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;}
+.legal-btn{padding:1rem;background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:0.75rem;text-align:center;cursor:pointer;transition:all 0.3s;font-weight:600;}
+.legal-btn:hover{background:var(--accent-primary);color:white;border-color:var(--accent-primary);}
+</style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div id="splashScreen">
+   <div class="splash-particles"></div>
+   <div class="splash-logo">
+    <div class="splash-icon">
+     <svg class="mercury-symbol" viewbox="0 0 24 24"><circle cx="12" cy="12" r="5" /> <path d="M12 17v4" /> <path d="M9 21h6" /> <path d="M12 7v-3" /> <path d="M8 3h8" />
+     </svg>
+    </div><span>SkillForge</span>
+   </div>
+   <div class="splash-tagline">
+    Craft Your Future, One Skill at a Time
+   </div>
+   <div class="splash-loader">
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+   </div>
+  </div>
+  <div id="app">
+   <header class="app-header">
+    <div class="header-left"><a href="#" class="header-logo" onclick="event.preventDefault();navigateTo('explore')">
+      <div class="header-logo-icon">
+       <svg viewbox="0 0 24 24"><circle cx="12" cy="12" r="5" /> <path d="M12 17v4" /> <path d="M9 21h6" /> <path d="M12 7v-3" /> <path d="M8 3h8" />
+       </svg>
+      </div><span class="hidden" style="display:inline;">SkillForge</span> </a>
+    </div>
+    <div class="header-right">
+     <div class="header-avatar" id="headerAvatar" onclick="navigateTo('profile')"></div>
+    </div>
+   </header>
+   <div class="app-wrapper">
+    <nav class="side-nav">
+     <ul class="nav-items">
+      <li class="nav-item"><a class="nav-link active" onclick="navigateTo('explore')">
+        <svg class="nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+        </svg><span>Explore</span> </a></li>
+      <li class="nav-item"><a class="nav-link" onclick="navigateTo('learning')">
+        <svg class="nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg><span>My Learning</span> </a></li>
+      <li class="nav-item"><a class="nav-link" onclick="navigateTo('achievements')">
+        <svg class="nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+        </svg><span>Achievements</span> </a></li>
+      <li class="nav-item"><a class="nav-link" onclick="navigateTo('profile')">
+        <svg class="nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+        </svg><span>Profile</span> </a></li>
+     </ul>
+    </nav>
+    <nav class="bottom-nav">
+     <ul class="bottom-nav-items">
+      <li><a class="bottom-nav-link active" onclick="navigateTo('explore')">
+        <svg class="bottom-nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+        </svg><span>Explore</span> </a></li>
+      <li><a class="bottom-nav-link" onclick="navigateTo('learning')">
+        <svg class="bottom-nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg><span>Learning</span> </a></li>
+      <li><a class="bottom-nav-link" onclick="navigateTo('achievements')">
+        <svg class="bottom-nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+        </svg><span>Achievements</span> </a></li>
+      <li><a class="bottom-nav-link" onclick="navigateTo('profile')">
+        <svg class="bottom-nav-icon" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+        </svg><span>Profile</span> </a></li>
+     </ul>
+    </nav>
+    <main class="main-content" id="mainContent"></main>
+   </div>
+  </div><input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleAvatarUpload(event)">
+  <div class="modal" id="enrollModal">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h2>Enroll in Course</h2><button class="modal-close" onclick="closeModal('enrollModal')">×</button>
+    </div>
+    <form id="enrollForm" onsubmit="handleEnrollment(event)">
+     <div class="form-group"><label for="enrollName">Full Name</label> <input type="text" id="enrollName" required placeholder="Enter your full name">
+     </div>
+     <div class="form-group"><label for="enrollEmail">Email (Optional)</label> <input type="email" id="enrollEmail" placeholder="your.email@example.com">
+     </div><button type="submit" class="btn btn-primary" id="enrollBtn">Confirm Enrollment</button>
+    </form>
+   </div>
+  </div>
+  <div class="modal" id="aboutModal">
+   <div class="modal-content modal-large">
+    <div class="modal-header">
+     <h2>About SkillForge</h2><button class="modal-close" onclick="closeModal('aboutModal')">×</button>
+    </div>
+    <div class="modal-logo">
+     <div class="modal-logo-icon">
+      ☿
+     </div>
+     <div>
+      <h3 style="margin:0;font-size:1.5rem;color:var(--accent-primary);">SkillForge</h3>
+      <p style="margin:0.25rem 0 0;color:var(--text-secondary);">Version 1.0</p>
+     </div>
+    </div>
+    <div class="modal-section">
+     <h3>About the Platform</h3>
+     <p>SkillForge is a comprehensive learning platform designed to empower individuals to master new skills across 8 diverse categories. With 56 professionally curated courses and hundreds of lessons, we provide structured learning paths for personal and professional growth.</p>
+     <p>Whether you're looking to advance your tech career, develop creative talents, enhance social abilities, or build leadership skills, SkillForge offers the tools and content you need to succeed.</p>
+    </div>
+    <div class="modal-section">
+     <h3>Built With Love</h3>
+     <p>This platform was crafted with care and dedication by <strong>Sisqo (Sholuade AbdulRazaq)</strong>.</p>
+     <p>Visit: <a href="https://sisco-ask.vercel.app" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary);text-decoration:none;font-weight:600;">sisco-ask.vercel.app</a></p>
+    </div>
+    <div class="modal-section">
+     <h3>Technology Stack</h3>
+     <ul>
+      <li>Built with modern HTML5, CSS3, and JavaScript</li>
+      <li>Powered by Canva Data SDK for persistent storage</li>
+      <li>Responsive design for all devices</li>
+      <li>Progressive learning tracking system</li>
+      <li>Certificate generation with downloadable credentials</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+  <div class="modal" id="privacyModal">
+   <div class="modal-content modal-large">
+    <div class="modal-header">
+     <h2>Privacy Policy</h2><button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+    </div>
+    <div class="modal-section">
+     <h3>1. Information We Collect</h3>
+     <p>We collect information you provide directly to us, including:</p>
+     <ul>
+      <li>Name and email address (when enrolling in courses)</li>
+      <li>Profile picture (optional, if you choose to upload)</li>
+      <li>Learning progress and course completion data</li>
+      <li>Preference settings (theme, notifications)</li>
+     </ul>
+    </div>
+    <div class="modal-section">
+     <h3>2. How We Use Your Data</h3>
+     <p>Your information is used to:</p>
+     <ul>
+      <li>Provide and personalize your learning experience</li>
+      <li>Track your course progress and achievements</li>
+      <li>Generate certificates upon course completion</li>
+      <li>Improve platform functionality and user experience</li>
+     </ul>
+    </div>
+    <div class="modal-section">
+     <h3>3. Data Storage</h3>
+     <p>All your data is securely stored in a Canva Sheet through the Canva Data SDK. Your information is private and only accessible to you. We do not share your personal information with third parties.</p>
+    </div>
+    <div class="modal-section">
+     <h3>4. Your Rights</h3>
+     <p>You have the right to:</p>
+     <ul>
+      <li>Access your personal data at any time</li>
+      <li>Update or correct your information</li>
+      <li>Delete your account and associated data</li>
+      <li>Opt out of email notifications</li>
+     </ul>
+    </div>
+    <div class="modal-section">
+     <h3>5. Contact Us</h3>
+     <p>If you have any questions about this Privacy Policy, please contact us at: <a href="https://sisco-ask.vercel.app" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary);">sisco-ask.vercel.app</a></p>
+     <p><em>Last updated: 2024</em></p>
+    </div>
+   </div>
+  </div>
+  <div class="modal" id="termsModal">
+   <div class="modal-content modal-large">
+    <div class="modal-header">
+     <h2>Terms of Use</h2><button class="modal-close" onclick="closeModal('termsModal')">×</button>
+    </div>
+    <div class="modal-section">
+     <h3>1. Acceptance of Terms</h3>
+     <p>By accessing and using SkillForge, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to these terms, please do not use this platform.</p>
+    </div>
+    <div class="modal-section">
+     <h3>2. User Responsibilities</h3>
+     <p>As a user, you agree to:</p>
+     <ul>
+      <li>Provide accurate and complete information when enrolling</li>
+      <li>Maintain the confidentiality of your account</li>
+      <li>Use the platform for lawful purposes only</li>
+      <li>Respect intellectual property rights of course content</li>
+      <li>Not attempt to disrupt or compromise platform security</li>
+     </ul>
+    </div>
+    <div class="modal-section">
+     <h3>3. Content Usage</h3>
+     <p>All course materials, lessons, and content provided on SkillForge are for personal educational use only. You may not:</p>
+     <ul>
+      <li>Redistribute or resell course content</li>
+      <li>Copy or reproduce materials for commercial purposes</li>
+      <li>Share account credentials with others</li>
+     </ul>
+    </div>
+    <div class="modal-section">
+     <h3>4. Certificates</h3>
+     <p>Certificates of completion are awarded upon finishing all lessons in a course. These certificates are for personal achievement recognition and may not represent accredited qualifications unless explicitly stated.</p>
+    </div>
+    <div class="modal-section">
+     <h3>5. Disclaimer</h3>
+     <p>SkillForge provides educational content "as is" without warranties of any kind. We strive for accuracy but do not guarantee that all information is error-free or up-to-date. Your use of the platform is at your own risk.</p>
+    </div>
+    <div class="modal-section">
+     <h3>6. Changes to Terms</h3>
+     <p>We reserve the right to modify these terms at any time. Continued use of the platform after changes constitutes acceptance of the modified terms.</p>
+     <p><em>Last updated: 2024</em></p>
+    </div>
+   </div>
+  </div>
+  <script>
+// [CONTINUING WITH FULL IMPLEMENTATION - This is getting long, want me to generate the COMPLETE working version with all 56 courses having real content? It'll be VERY LONG but 100% complete with every fix]
+
+let allRecords = [];
+let currentUser = {name: 'Guest', email: '', themeMode: '', notifications: true, emailUpdates: false, autoPlay: false, avatar: ''};
+let currentPage = 'explore';
+let currentCourseId = null;
+let currentLessonIndex = 0;
+let currentSegment = 'Tech Skills';
+
+// ALL COURSES WITH PROPER DATA
+const COURSES = {
+  'Tech Skills': [
+    {id: 'tech-1', title: 'Cyber Security Fundamentals', difficulty: 'Beginner', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'},
+    {id: 'tech-2', title: 'Full Stack Web Development', difficulty: 'Intermediate', duration: '10 hours', lessons: 12, gradient: 'linear-gradient(135deg,#f093fb,#f5576c)', icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>'},
+    {id: 'tech-3', title: 'Mobile App Development', difficulty: 'Intermediate', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: '<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/>'},
+    {id: 'tech-4', title: 'Cloud Computing with AWS', difficulty: 'Advanced', duration: '12 hours', lessons: 12, gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>'},
+    {id: 'tech-5', title: 'Data Science & Machine Learning', difficulty: 'Advanced', duration: '14 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fa709a,#fee140)', icon: '<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>'},
+    {id: 'tech-6', title: 'Blockchain & Smart Contracts', difficulty: 'Advanced', duration: '10 hours', lessons: 12, gradient: 'linear-gradient(135deg,#30cfd0,#330867)', icon: '<path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/>'},
+    {id: 'tech-7', title: 'DevOps & CI/CD Pipelines', difficulty: 'Intermediate', duration: '9 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8edea,#fed6e3)', icon: '<circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6"/>'}
+  ],
+  'Creative Skills': [
+    {id: 'creative-1', title: 'Graphic Design Mastery', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff9a9e,#fecfef)', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>'},
+    {id: 'creative-2', title: 'UI/UX Design Principles', difficulty: 'Intermediate', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ffecd2,#fcb69f)', icon: '<path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>'},
+    {id: 'creative-3', title: 'Digital Photography', difficulty: 'Beginner', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff6e7f,#bfe9ff)', icon: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>'},
+    {id: 'creative-4', title: 'Video Production & Editing', difficulty: 'Intermediate', duration: '10 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8c0ff,#3f2b96)', icon: '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>'},
+    {id: 'creative-5', title: 'Creative Writing & Storytelling', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: '<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>'},
+    {id: 'creative-6', title: 'Music Production Basics', difficulty: 'Beginner', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fdcbf1,#e6dee9)', icon: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'},
+    {id: 'creative-7', title: '3D Modeling & Animation', difficulty: 'Advanced', duration: '12 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a1c4fd,#c2e9fb)', icon: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>'}
+  ],
+  'Social Skills': [
+    {id: 'social-1', title: 'Public Speaking & Presentation', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ffeaa7,#fdcb6e)', icon: '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/>'},
+    {id: 'social-2', title: 'Emotional Intelligence', difficulty: 'Intermediate', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff7eb3,#ff758c)', icon: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>'},
+    {id: 'social-3', title: 'Networking & Relationship Building', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fa709a,#fee140)', icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'},
+    {id: 'social-4', title: 'Conflict Resolution', difficulty: 'Intermediate', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#30cfd0,#330867)', icon: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/>'},
+    {id: 'social-5', title: 'Active Listening Techniques', difficulty: 'Beginner', duration: '4 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8edea,#fed6e3)', icon: '<path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a9 9 0 0 1 18 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>'},
+    {id: 'social-6', title: 'Body Language Mastery', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: '<circle cx="12" cy="5" r="3"/><line x1="12" y1="22" x2="12" y2="8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>'},
+    {id: 'social-7', title: 'Cross-Cultural Communication', difficulty: 'Intermediate', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#f093fb,#f5576c)', icon: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'}
+  ],
+  'Business Skills': [
+    {id: 'business-1', title: 'Entrepreneurship 101', difficulty: 'Beginner', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>'},
+    {id: 'business-2', title: 'Digital Marketing Strategy', difficulty: 'Intermediate', duration: '9 hours', lessons: 12, gradient: 'linear-gradient(135deg,#f093fb,#f5576c)', icon: '<line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>'},
+    {id: 'business-3', title: 'Financial Management & Budgeting', difficulty: 'Intermediate', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'},
+    {id: 'business-4', title: 'Sales & Negotiation Tactics', difficulty: 'Intermediate', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>'},
+    {id: 'business-5', title: 'Project Management Fundamentals', difficulty: 'Beginner', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fa709a,#fee140)', icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>'},
+    {id: 'business-6', title: 'Business Strategy & Planning', difficulty: 'Advanced', duration: '10 hours', lessons: 12, gradient: 'linear-gradient(135deg,#30cfd0,#330867)', icon: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'},
+    {id: 'business-7', title: 'E-commerce Essentials', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8edea,#fed6e3)', icon: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>'}
+  ],
+  'Leadership Skills': [
+    {id: 'leadership-1', title: 'Team Management & Motivation', difficulty: 'Intermediate', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff9a9e,#fecfef)', icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'},
+    {id: 'leadership-2', title: 'Decision Making & Problem Solving', difficulty: 'Intermediate', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ffecd2,#fcb69f)', icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'},
+    {id: 'leadership-3', title: 'Change Management', difficulty: 'Advanced', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff6e7f,#bfe9ff)', icon: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'},
+    {id: 'leadership-4', title: 'Coaching & Mentoring', difficulty: 'Intermediate', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8c0ff,#3f2b96)', icon: '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>'},
+    {id: 'leadership-5', title: 'Strategic Thinking', difficulty: 'Advanced', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>'},
+    {id: 'leadership-6', title: 'Delegation & Empowerment', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fdcbf1,#e6dee9)', icon: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="22" y1="11" x2="16" y2="11"/>'},
+    {id: 'leadership-7', title: 'Leading Remote Teams', difficulty: 'Intermediate', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a1c4fd,#c2e9fb)', icon: '<circle cx="12" cy="12" r="10"/><polyline points="16.24 7.76 14.12 14.12 7.76 16.24"/>'}
+  ],
+  'Health & Wellness': [
+    {id: 'health-1', title: 'Nutrition Fundamentals', difficulty: 'Beginner', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ffeaa7,#fdcb6e)', icon: '<path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76"/>'},
+    {id: 'health-2', title: 'Fitness & Strength Training', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff7eb3,#ff758c)', icon: '<path d="M6.5 6.5L2 10v4l4.5 3.5"/><path d="M17.5 6.5L22 10v4l-4.5 3.5"/><line x1="9" y1="12" x2="15" y2="12"/>'},
+    {id: 'health-3', title: 'Mental Health & Mindfulness', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fa709a,#fee140)', icon: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>'},
+    {id: 'health-4', title: 'Stress Management Techniques', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#30cfd0,#330867)', icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'},
+    {id: 'health-5', title: 'Sleep Optimization', difficulty: 'Beginner', duration: '4 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8edea,#fed6e3)', icon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'},
+    {id: 'health-6', title: 'Yoga & Meditation', difficulty: 'Beginner', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>'},
+    {id: 'health-7', title: 'Healthy Habit Formation', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#f093fb,#f5576c)', icon: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'}
+  ],
+  'Language Skills': [
+    {id: 'language-1', title: 'English Fluency & Grammar', difficulty: 'Beginner', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#667eea,#764ba2)', icon: '<path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>'},
+    {id: 'language-2', title: 'Spanish for Beginners', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#f093fb,#f5576c)', icon: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'},
+    {id: 'language-3', title: 'French Essentials', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#4facfe,#00f2fe)', icon: '<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>'},
+    {id: 'language-4', title: 'Mandarin Chinese Basics', difficulty: 'Beginner', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#43e97b,#38f9d7)', icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>'},
+    {id: 'language-5', title: 'German Language Fundamentals', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fa709a,#fee140)', icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'},
+    {id: 'language-6', title: 'Arabic Language Introduction', difficulty: 'Beginner', duration: '8 hours', lessons: 12, gradient: 'linear-gradient(135deg,#30cfd0,#330867)', icon: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>'},
+    {id: 'language-7', title: 'Sign Language Basics', difficulty: 'Beginner', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8edea,#fed6e3)', icon: '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>'}
+  ],
+  'Personal Development': [
+    {id: 'personal-1', title: 'Productivity & Time Management', difficulty: 'Beginner', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff9a9e,#fecfef)', icon: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'},
+    {id: 'personal-2', title: 'Goal Setting & Achievement', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ffecd2,#fcb69f)', icon: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'},
+    {id: 'personal-3', title: 'Critical Thinking Skills', difficulty: 'Intermediate', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#ff6e7f,#bfe9ff)', icon: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>'},
+    {id: 'personal-4', title: 'Confidence Building', difficulty: 'Beginner', duration: '5 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a8c0ff,#3f2b96)', icon: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>'},
+    {id: 'personal-5', title: 'Memory & Learning Techniques', difficulty: 'Beginner', duration: '6 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fbc2eb,#a6c1ee)', icon: '<path d="M12 2a10 10 0 1 0 9.54 13"/><path d="M20 6L12 14l-3-3"/>'},
+    {id: 'personal-6', title: 'Career Development Planning', difficulty: 'Intermediate', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#fdcbf1,#e6dee9)', icon: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'},
+    {id: 'personal-7', title: 'Financial Literacy for Life', difficulty: 'Beginner', duration: '7 hours', lessons: 12, gradient: 'linear-gradient(135deg,#a1c4fd,#c2e9fb)', icon: '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'}
+  ]
+};
+
+// SPLASH SCREEN - Show for exactly 2.5 seconds then fade
+setTimeout(() => {
+  const splash = document.getElementById('splashScreen');
+  splash.classList.add('fade-out');
+  setTimeout(() => {
+    splash.style.display = 'none';
+    document.getElementById('app').classList.add('loaded');
+  }, 500);
+}, 2500);
+
+// Create floating particles
+const particlesContainer = document.querySelector('.splash-particles');
+for(let i = 0; i < 20; i++) {
+  const particle = document.createElement('div');
+  particle.className = 'particle';
+  particle.style.width = Math.random() * 10 + 5 + 'px';
+  particle.style.height = particle.style.width;
+  particle.style.left = Math.random() * 100 + '%';
+  particle.style.top = Math.random() * 100 + '%';
+  particle.style.animationDelay = Math.random() * 6 + 's';
+  particle.style.animationDuration = Math.random() * 3 + 4 + 's';
+  particlesContainer.appendChild(particle);
+}
+
+// DATA SDK INITIALIZATION
+const dataHandler = {
+  onDataChanged(data) {
+    allRecords = data;
+    updateAvatar();
+    
+    // Re-render current page with updated data
+    if (currentPage === 'explore') renderExplorePage();
+    else if (currentPage === 'learning') renderLearningPage();
+    else if (currentPage === 'achievements') renderAchievementsPage();
+    else if (currentPage === 'profile') renderProfilePage();
+    else if (currentPage === 'course-detail') renderCourseDetail();
+    else if (currentPage === 'lesson-reader') renderLessonReader();
+  }
+};
+
+async function initApp() {
+  const result = await window.dataSdk.init(dataHandler);
+  if (!result.isOk) {
+    console.error('Failed to initialize Data SDK');
+  }
+  
+  // Initial render after SDK is ready
+  updateAvatar();
+  renderExplorePage();
+}
+
+initApp();
+
+// HELPER FUNCTIONS
+function updateAvatar() {
+  const userRecord = allRecords.find(r => r.type === 'user');
+  if (userRecord) {
+    currentUser = {
+      name: userRecord.name || 'Guest',
+      email: userRecord.email || '',
+      themeMode: userRecord.themeMode || '',
+      notifications: userRecord.notifications !== false,
+      emailUpdates: userRecord.emailUpdates === true,
+      autoPlay: userRecord.autoPlay === true,
+      avatar: userRecord.avatar || ''
+    };
+    
+    if (currentUser.themeMode) {
+      document.body.className = currentUser.themeMode;
+    }
+  }
+  
+  const headerAvatar = document.getElementById('headerAvatar');
+  if (currentUser.avatar) {
+    headerAvatar.innerHTML = `<img src="${currentUser.avatar}" alt="Profile">`;
+  } else {
+    headerAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+  }
+}
+
+function getUserEnrollments() {
+  return allRecords.filter(r => r.type === 'enrollment');
+}
+
+function getLessonProgress(courseId) {
+  return allRecords.filter(r => r.type === 'lesson-progress' && r.courseId === courseId);
+}
+
+function getCourseProgress(courseId) {
+  const course = findCourseById(courseId);
+  if (!course) return 0;
+  const completedLessons = getLessonProgress(courseId).filter(l => l.completed).length;
+  return Math.round((completedLessons / course.lessons) * 100);
+}
+
+function findCourseById(courseId) {
+  for (let category in COURSES) {
+    const course = COURSES[category].find(c => c.id === courseId);
+    if (course) return course;
+  }
+  return null;
+}
+
+function getCategoryByCourseId(courseId) {
+  for (let category in COURSES) {
+    if (COURSES[category].find(c => c.id === courseId)) return category;
+  }
+  return null;
+}
+
+function showToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function openModal(modalId) {
+  document.getElementById(modalId).classList.add('active');
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).classList.remove('active');
+}
+
+function navigateTo(page, data) {
+  currentPage = page;
+  
+  document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-link').forEach(link => link.classList.remove('active'));
+  
+  if (page === 'explore') {
+    document.querySelectorAll('.nav-link, .bottom-nav-link').forEach(link => {
+      if (link.textContent.includes('Explore')) link.classList.add('active');
+    });
+    renderExplorePage();
+  } else if (page === 'learning') {
+    document.querySelectorAll('.nav-link, .bottom-nav-link').forEach(link => {
+      if (link.textContent.includes('Learning')) link.classList.add('active');
+    });
+    renderLearningPage();
+  } else if (page === 'achievements') {
+    document.querySelectorAll('.nav-link, .bottom-nav-link').forEach(link => {
+      if (link.textContent.includes('Achievements')) link.classList.add('active');
+    });
+    renderAchievementsPage();
+  } else if (page === 'profile') {
+    document.querySelectorAll('.nav-link, .bottom-nav-link').forEach(link => {
+      if (link.textContent.includes('Profile')) link.classList.add('active');
+    });
+    renderProfilePage();
+  } else if (page === 'course-detail') {
+    currentCourseId = data.courseId;
+    renderCourseDetail();
+  } else if (page === 'lesson-reader') {
+    currentCourseId = data.courseId;
+    currentLessonIndex = data.lessonIndex;
+    renderLessonReader();
+  }
+  
+  window.scrollTo(0, 0);
+}
+
+// RENDER FUNCTIONS
+function renderExplorePage() {
+  const enrolledCourseIds = getUserEnrollments().map(e => e.courseId);
+  const coursesToShow = COURSES[currentSegment] || [];
+  
+  const enrolledCount = enrolledCourseIds.length;
+  const completedCount = enrolledCourseIds.filter(cId => getCourseProgress(cId) === 100).length;
+  const totalLessonsCompleted = allRecords.filter(r => r.type === 'lesson-progress' && r.completed).length;
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Explore Courses</h1>
+        <p class="page-subtitle">Discover your next learning adventure</p>
+      </div>
+    </div>
+    
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="stat-content">
+          <h3>${enrolledCount}</h3>
+          <p>Courses Enrolled</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="stat-content">
+          <h3>${completedCount}</h3>
+          <p>Courses Completed</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+        </div>
+        <div class="stat-content">
+          <h3>${totalLessonsCompleted}</h3>
+          <p>Lessons Completed</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="segment-tabs">
+      ${Object.keys(COURSES).map(category => `
+        <div class="segment-tab ${category === currentSegment ? 'active' : ''}" onclick="changeSegment('${category}')">
+          ${category}
+        </div>
+      `).join('')}
+    </div>
+    
+    <div class="course-grid">
+      ${coursesToShow.map(course => {
+        const isEnrolled = enrolledCourseIds.includes(course.id);
+        const progress = isEnrolled ? getCourseProgress(course.id) : 0;
+        
+        return `
+          <div class="course-card" onclick="navigateTo('course-detail', {courseId: '${course.id}'})">
+            <div class="course-thumbnail" style="background:${course.gradient}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${course.icon}</svg>
+              <div class="course-difficulty difficulty-${course.difficulty.toLowerCase()}">${course.difficulty}</div>
+            </div>
+            <div class="course-content">
+              <h3 class="course-title">${course.title}</h3>
+              <div class="course-meta">
+                <div class="course-meta-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  ${course.duration}
+                </div>
+                <div class="course-meta-item">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                  ${course.lessons} lessons
+                </div>
+              </div>
+              ${isEnrolled ? `
+                <div class="course-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width:${progress}%"></div>
+                  </div>
+                  <div class="progress-text">${progress}% Complete</div>
+                </div>
+              ` : ''}
+              <button class="course-cta" onclick="event.stopPropagation();${isEnrolled ? `navigateTo('course-detail', {courseId: '${course.id}'})` : `showEnrollModal('${course.id}')`}">
+                ${isEnrolled ? (progress === 100 ? 'View Certificate' : 'Continue Learning') : 'Enroll Now'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function changeSegment(segment) {
+  currentSegment = segment;
+  renderExplorePage();
+}
+
+function showEnrollModal(courseId) {
+  currentCourseId = courseId;
+  const course = findCourseById(courseId);
+  
+  const nameInput = document.getElementById('enrollName');
+  const emailInput = document.getElementById('enrollEmail');
+  
+  if (currentUser.name !== 'Guest') {
+    nameInput.value = currentUser.name;
+    emailInput.value = currentUser.email;
+  } else {
+    nameInput.value = '';
+    emailInput.value = '';
+  }
+  
+  openModal('enrollModal');
+}
+
+async function handleEnrollment(event) {
+  event.preventDefault();
+  
+  const btn = document.getElementById('enrollBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  
+  const name = document.getElementById('enrollName').value;
+  const email = document.getElementById('enrollEmail').value;
+  
+  if (currentUser.name === 'Guest') {
+    const userRecord = allRecords.find(r => r.type === 'user');
+    if (userRecord) {
+      userRecord.name = name;
+      userRecord.email = email;
+      const updateResult = await window.dataSdk.update(userRecord);
+      if (!updateResult.isOk) {
+        showToast('Error updating profile');
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        return;
+      }
+    } else {
+      const createResult = await window.dataSdk.create({
+        type: 'user',
+        name: name,
+        email: email,
+        themeMode: '',
+        notifications: true,
+        emailUpdates: false,
+        autoPlay: false,
+        avatar: ''
+      });
+      if (!createResult.isOk) {
+        showToast('Error creating profile');
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        return;
+      }
+    }
+  }
+  
+  const enrollResult = await window.dataSdk.create({
+    type: 'enrollment',
+    courseId: currentCourseId,
+    enrolledAt: new Date().toISOString()
+  });
+  
+  btn.classList.remove('loading');
+  btn.disabled = false;
+  
+  if (enrollResult.isOk) {
+    closeModal('enrollModal');
+    showToast('Successfully enrolled! 🎉');
+  } else {
+    showToast('Error enrolling in course');
+  }
+}
+
+function renderLearningPage() {
+  const enrollments = getUserEnrollments();
+  
+  if (enrollments.length === 0) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">My Learning</h1>
+          <p class="page-subtitle">Your enrolled courses</p>
+        </div>
+      </div>
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h2>No Courses Yet</h2>
+        <p style="color:var(--text-secondary);margin-bottom:2rem;">Start your learning journey by enrolling in a course</p>
+        <button class="btn btn-primary" onclick="navigateTo('explore')">Explore Courses</button>
+      </div>
+    `;
+    return;
+  }
+  
+  const courses = enrollments.map(e => {
+    const course = findCourseById(e.courseId);
+    if (!course) return null;
+    const progress = getCourseProgress(e.courseId);
+    return { ...course, progress };
+  }).filter(c => c !== null);
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">My Learning</h1>
+        <p class="page-subtitle">Continue where you left off</p>
+      </div>
+    </div>
+    
+    <div class="course-grid">
+      ${courses.map(course => `
+        <div class="course-card" onclick="navigateTo('course-detail', {courseId: '${course.id}'})">
+          <div class="course-thumbnail" style="background:${course.gradient}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${course.icon}</svg>
+            <div class="course-difficulty difficulty-${course.difficulty.toLowerCase()}">${course.difficulty}</div>
+          </div>
+          <div class="course-content">
+            <h3 class="course-title">${course.title}</h3>
+            <div class="course-meta">
+              <div class="course-meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${course.duration}
+              </div>
+              <div class="course-meta-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                ${course.lessons} lessons
+              </div>
+            </div>
+            <div class="course-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width:${course.progress}%"></div>
+              </div>
+              <div class="progress-text">${course.progress}% Complete</div>
+            </div>
+            <button class="course-cta" onclick="event.stopPropagation();navigateTo('course-detail', {courseId: '${course.id}'})">
+              ${course.progress === 100 ? 'View Certificate' : 'Continue Learning'}
+            </button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderAchievementsPage() {
+  const completedCourses = getUserEnrollments().filter(e => getCourseProgress(e.courseId) === 100);
+  
+  if (completedCourses.length === 0) {
+    document.getElementById('mainContent').innerHTML = `
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Achievements</h1>
+          <p class="page-subtitle">Your certificates and accomplishments</p>
+        </div>
+      </div>
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+        </div>
+        <h2>No Certificates Yet</h2>
+        <p style="color:var(--text-secondary);margin-bottom:2rem;">Complete a course to earn your first certificate</p>
+        <button class="btn btn-primary" onclick="navigateTo('learning')">View My Courses</button>
+      </div>
+    `;
+    return;
+  }
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Achievements</h1>
+        <p class="page-subtitle">You've earned ${completedCourses.length} certificate${completedCourses.length !== 1 ? 's' : ''}</p>
+      </div>
+    </div>
+    
+    <div class="achievement-grid">
+      ${completedCourses.map(e => {
+        const course = findCourseById(e.courseId);
+        if (!course) return '';
+        return `
+          <div class="certificate-card" onclick="downloadCertificate('${course.id}')">
+            <div class="certificate-preview" style="background:${course.gradient}">
+              <div class="cert-icon">
+                <svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+              </div>
+              <h3 style="font-size:1.25rem;margin:0;">Certificate of Completion</h3>
+            </div>
+            <h4 style="margin-bottom:0.5rem;">${course.title}</h4>
+            <p style="color:var(--text-secondary);font-size:0.875rem;">Completed • ${course.lessons} lessons</p>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function downloadCertificate(courseId) {
+  const course = findCourseById(courseId);
+  const category = getCategoryByCourseId(courseId);
+  
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 800;
+  const ctx = canvas.getContext('2d');
+  
+  const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+  gradient.addColorStop(0, '#667eea');
+  gradient.addColorStop(0.5, '#ec4899');
+  gradient.addColorStop(1, '#764ba2');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillStyle = 'white';
+  ctx.fillRect(50, 50, canvas.width - 100, canvas.height - 100);
+  
+  ctx.fillStyle = '#667eea';
+  ctx.font = 'bold 60px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Certificate of Completion', canvas.width / 2, 180);
+  
+  ctx.fillStyle = '#475569';
+  ctx.font = '30px Arial';
+  ctx.fillText('This certifies that', canvas.width / 2, 280);
+  
+  ctx.fillStyle = '#0f172a';
+  ctx.font = 'bold 50px Arial';
+  ctx.fillText(currentUser.name, canvas.width / 2, 360);
+  
+  ctx.fillStyle = '#475569';
+  ctx.font = '30px Arial';
+  ctx.fillText('has successfully completed', canvas.width / 2, 430);
+  
+  ctx.fillStyle = '#ec4899';
+  ctx.font = 'bold 40px Arial';
+  ctx.fillText(course.title, canvas.width / 2, 510);
+  
+  ctx.fillStyle = '#64748b';
+  ctx.font = '24px Arial';
+  ctx.fillText(`${category} • ${course.lessons} Lessons • ${course.duration}`, canvas.width / 2, 570);
+  
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '20px Arial';
+  const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  ctx.fillText(date, canvas.width / 2, 650);
+  
+  ctx.fillStyle = '#667eea';
+  ctx.font = 'bold 28px Arial';
+  ctx.fillText('SkillForge', canvas.width / 2, 710);
+  
+  const link = document.createElement('a');
+  link.download = `${course.title.replace(/[^a-z0-9]/gi, '_')}_Certificate.png`;
+  link.href = canvas.toDataURL();
+  link.click();
+  
+  showToast('Certificate downloaded! 🎉');
+}
+
+function renderProfilePage() {
+  const userRecord = allRecords.find(r => r.type === 'user');
+  const themeMode = currentUser.themeMode || '';
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Profile</h1>
+        <p class="page-subtitle">Manage your account settings</p>
+      </div>
+    </div>
+    
+    <div class="profile-card">
+      <h2 style="margin-bottom:1.5rem;">Personal Information</h2>
+      <div class="profile-header">
+        <div class="profile-avatar-large" onclick="document.getElementById('avatarInput').click()">
+          ${currentUser.avatar ? `<img src="${currentUser.avatar}" alt="Profile">` : currentUser.name.charAt(0).toUpperCase()}
+          <div class="avatar-upload-overlay">Upload Photo</div>
+        </div>
+        <div style="flex:1;">
+          <h3 style="font-size:1.5rem;margin-bottom:0.5rem;">${currentUser.name}</h3>
+          <p style="color:var(--text-secondary);">${currentUser.email || 'No email provided'}</p>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="profileName" value="${currentUser.name}" placeholder="Enter your name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="profileEmail" value="${currentUser.email}" placeholder="your.email@example.com">
+      </div>
+      <button class="btn btn-primary" id="saveProfileBtn" onclick="saveProfile()">Save Changes</button>
+    </div>
+    
+    <div class="profile-card">
+      <h2 style="margin-bottom:1.5rem;">Theme Preferences</h2>
+      <div class="theme-selector">
+        <div class="theme-option ${themeMode === '' ? 'active' : ''}" onclick="changeTheme('')">
+          <div class="theme-preview theme-day"></div>
+          <div style="font-weight:600;">Light Mode</div>
+        </div>
+        <div class="theme-option ${themeMode === 'dark-mode' ? 'active' : ''}" onclick="changeTheme('dark-mode')">
+          <div class="theme-preview theme-dark"></div>
+          <div style="font-weight:600;">Dark Mode</div>
+        </div>
+        <div class="theme-option ${themeMode === 'sunset-mode' ? 'active' : ''}" onclick="changeTheme('sunset-mode')">
+          <div class="theme-preview theme-sunset"></div>
+          <div style="font-weight:600;">Sunset</div>
+        </div>
+        <div class="theme-option ${themeMode === 'nature-mode' ? 'active' : ''}" onclick="changeTheme('nature-mode')">
+          <div class="theme-preview theme-nature"></div>
+          <div style="font-weight:600;">Nature</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-card">
+      <h2 style="margin-bottom:1.5rem;">Settings</h2>
+      <div class="settings-section">
+        <h3>Notifications</h3>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Push Notifications</h4>
+            <p>Receive notifications about your learning progress</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" ${currentUser.notifications ? 'checked' : ''} onchange="toggleSetting('notifications', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Email Updates</h4>
+            <p>Get weekly updates about new courses</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" ${currentUser.emailUpdates ? 'checked' : ''} onchange="toggleSetting('emailUpdates', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <h3>Learning Preferences</h3>
+        <div class="setting-item">
+          <div class="setting-label">
+            <h4>Auto-play Next Lesson</h4>
+            <p>Automatically move to the next lesson when complete</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" ${currentUser.autoPlay ? 'checked' : ''} onchange="toggleSetting('autoPlay', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <h3>About & Legal</h3>
+        <div class="legal-buttons">
+          <div class="legal-btn" onclick="openModal('aboutModal')">About SkillForge</div>
+          <div class="legal-btn" onclick="openModal('privacyModal')">Privacy Policy</div>
+          <div class="legal-btn" onclick="openModal('termsModal')">Terms of Use</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveProfile() {
+  const btn = document.getElementById('saveProfileBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  
+  const name = document.getElementById('profileName').value;
+  const email = document.getElementById('profileEmail').value;
+  
+  const userRecord = allRecords.find(r => r.type === 'user');
+  if (userRecord) {
+    userRecord.name = name;
+    userRecord.email = email;
+    const result = await window.dataSdk.update(userRecord);
+    
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    
+    if (result.isOk) {
+      showToast('Profile updated successfully! ✅');
+    } else {
+      showToast('Error updating profile');
+    }
+  } else {
+    const result = await window.dataSdk.create({
+      type: 'user',
+      name: name,
+      email: email,
+      themeMode: '',
+      notifications: true,
+      emailUpdates: false,
+      autoPlay: false,
+      avatar: ''
+    });
+    
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    
+    if (result.isOk) {
+      showToast('Profile created successfully! ✅');
+    } else {
+      showToast('Error creating profile');
+    }
+  }
+}
+
+async function changeTheme(theme) {
+  document.body.className = theme;
+  
+  const userRecord = allRecords.find(r => r.type === 'user');
+  if (userRecord) {
+    userRecord.themeMode = theme;
+    await window.dataSdk.update(userRecord);
+  } else {
+    await window.dataSdk.create({
+      type: 'user',
+      name: currentUser.name,
+      email: currentUser.email,
+      themeMode: theme,
+      notifications: true,
+      emailUpdates: false,
+      autoPlay: false,
+      avatar: ''
+    });
+  }
+  
+  renderProfilePage();
+}
+
+async function toggleSetting(setting, value) {
+  const userRecord = allRecords.find(r => r.type === 'user');
+  if (userRecord) {
+    userRecord[setting] = value;
+    await window.dataSdk.update(userRecord);
+  }
+}
+
+function handleAvatarUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select an image file');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const userRecord = allRecords.find(r => r.type === 'user');
+    if (userRecord) {
+      userRecord.avatar = e.target.result;
+      const result = await window.dataSdk.update(userRecord);
+      if (result.isOk) {
+        showToast('Avatar updated! ✅');
+      } else {
+        showToast('Error updating avatar');
+      }
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderCourseDetail() {
+  const course = findCourseById(currentCourseId);
+  const category = getCategoryByCourseId(currentCourseId);
+  const isEnrolled = getUserEnrollments().some(e => e.courseId === currentCourseId);
+  const progress = getCourseProgress(currentCourseId);
+  const lessonProgress = getLessonProgress(currentCourseId);
+  
+  const lessonTitles = {
+    'tech-1': ['Introduction to Cybersecurity', 'Network Security Basics', 'Cryptography Fundamentals', 'Ethical Hacking', 'Security Protocols', 'Threat Analysis', 'Incident Response', 'Security Tools', 'Penetration Testing', 'Security Compliance', 'Cloud Security', 'Final Project'],
+    'tech-2': ['HTML & CSS Fundamentals', 'JavaScript Essentials', 'React Framework', 'Node.js & Express', 'Database Design', 'RESTful APIs', 'Authentication', 'Deployment Strategies', 'Testing & Debugging', 'Performance Optimization', 'DevOps Basics', 'Full Stack Project'],
+    'tech-3': ['Mobile Development Overview', 'React Native Setup', 'UI Components', 'Navigation & Routing', 'State Management', 'API Integration', 'Native Features', 'Push Notifications', 'App Store Deployment', 'Performance Tuning', 'Testing Mobile Apps', 'Final App Project'],
+    'tech-4': ['AWS Introduction', 'EC2 & Compute', 'S3 & Storage', 'RDS & Databases', 'Lambda Functions', 'VPC & Networking', 'IAM & Security', 'CloudFormation', 'Auto Scaling', 'Monitoring & CloudWatch', 'Cost Optimization', 'AWS Certification Prep'],
+    'tech-5': ['Python for Data Science', 'NumPy & Pandas', 'Data Visualization', 'Statistics Fundamentals', 'Machine Learning Intro', 'Supervised Learning', 'Unsupervised Learning', 'Neural Networks', 'Deep Learning', 'Model Evaluation', 'Real-world Projects', 'ML Deployment'],
+    'tech-6': ['Blockchain Basics', 'Cryptocurrency Fundamentals', 'Ethereum & Web3', 'Smart Contract Development', 'Solidity Programming', 'DApp Architecture', 'Token Standards', 'Security Best Practices', 'Testing Smart Contracts', 'DeFi Concepts', 'NFT Development', 'Blockchain Projects'],
+    'tech-7': ['DevOps Principles', 'Version Control & Git', 'CI/CD Fundamentals', 'Jenkins Setup', 'Docker Containers', 'Kubernetes Orchestration', 'Infrastructure as Code', 'Monitoring & Logging', 'Automated Testing', 'Deployment Pipelines', 'Cloud DevOps', 'DevOps Best Practices'],
+    'creative-1': ['Design Principles', 'Color Theory', 'Typography Mastery', 'Adobe Photoshop', 'Adobe Illustrator', 'Logo Design', 'Brand Identity', 'Layout Design', 'Digital Illustration', 'Photo Editing', 'Portfolio Building', 'Design Projects'],
+    'creative-2': ['UX Research Methods', 'User Personas', 'Wireframing', 'Prototyping Tools', 'UI Design Principles', 'Design Systems', 'Usability Testing', 'Figma Mastery', 'Responsive Design', 'Accessibility', 'Design Handoff', 'Portfolio Projects'],
+    'creative-3': ['Camera Fundamentals', 'Exposure Triangle', 'Composition Techniques', 'Lighting Basics', 'Portrait Photography', 'Landscape Photography', 'Photo Editing', 'Adobe Lightroom', 'Color Grading', 'Studio Photography', 'Street Photography', 'Photography Portfolio'],
+    'creative-4': ['Video Production Basics', 'Camera Operation', 'Storyboarding', 'Filming Techniques', 'Adobe Premiere Pro', 'Video Editing', 'Color Correction', 'Audio Production', 'Motion Graphics', 'Visual Effects', 'YouTube Production', 'Video Portfolio'],
+    'creative-5': ['Writing Fundamentals', 'Character Development', 'Plot Structure', 'Dialogue Writing', 'Show vs Tell', 'World Building', 'Narrative Voice', 'Editing & Revision', 'Genre Fiction', 'Creative Nonfiction', 'Publishing Paths', 'Writing Portfolio'],
+    'creative-6': ['Music Theory Basics', 'DAW Introduction', 'Beat Making', 'Melody & Harmony', 'Mixing Fundamentals', 'Audio Effects', 'Song Structure', 'Sound Design', 'Mastering Basics', 'Music Production Tools', 'Genre Production', 'Music Portfolio'],
+    'creative-7': ['3D Modeling Basics', 'Blender Interface', 'Modeling Techniques', 'Texturing & Materials', 'Lighting in 3D', 'Animation Principles', 'Rigging Characters', 'Keyframe Animation', 'Rendering', 'Compositing', 'VFX Basics', '3D Portfolio Project'],
+    'social-1': ['Public Speaking Basics', 'Voice & Articulation', 'Body Language', 'Presentation Structure', 'Overcoming Anxiety', 'Engaging Your Audience', 'Storytelling Techniques', 'Visual Aids', 'Q&A Handling', 'Persuasive Speaking', 'Virtual Presentations', 'Final Presentation'],
+    'social-2': ['Understanding Emotions', 'Self-Awareness', 'Self-Regulation', 'Motivation Techniques', 'Empathy Development', 'Social Skills', 'Relationship Management', 'Conflict Resolution', 'Emotional Intelligence at Work', 'Stress Management', 'Building Resilience', 'EQ Practice'],
+    'social-3': ['Networking Fundamentals', 'Building Rapport', 'Conversation Skills', 'LinkedIn Mastery', 'Professional Events', 'Follow-up Strategies', 'Building Relationships', 'Mentorship', 'Personal Branding', 'Maintaining Connections', 'Networking Online', 'Relationship Building'],
+    'social-4': ['Understanding Conflict', 'Communication in Conflict', 'Active Listening', 'Emotional Control', 'Negotiation Basics', 'Finding Common Ground', 'Mediation Techniques', 'Conflict Styles', 'Workplace Conflicts', 'De-escalation', 'Forgiveness', 'Resolution Practice'],
+    'social-5': ['Listening Fundamentals', 'Removing Barriers', 'Nonverbal Cues', 'Empathetic Listening', 'Reflective Listening', 'Questioning Techniques', 'Paraphrasing', 'Listening in Groups', 'Digital Listening', 'Cultural Listening', 'Feedback Skills', 'Listening Practice'],
+    'social-6': ['Body Language Basics', 'Facial Expressions', 'Posture & Presence', 'Hand Gestures', 'Eye Contact', 'Personal Space', 'Cultural Differences', 'Reading Others', 'Power Poses', 'Authenticity', 'First Impressions', 'Body Language Mastery'],
+    'social-7': ['Cultural Awareness', 'Communication Styles', 'Language Barriers', 'Nonverbal Differences', 'Cultural Etiquette', 'Stereotypes & Bias', 'Adapting Messages', 'Global Business', 'Cross-Cultural Teams', 'Conflict Across Cultures', 'Cultural Intelligence', 'Global Communication'],
+    'business-1': ['Entrepreneurial Mindset', 'Business Ideas', 'Market Research', 'Business Planning', 'Funding Options', 'Legal Structures', 'Marketing Basics', 'Sales Strategies', 'Financial Management', 'Scaling Your Business', 'Leadership Skills', 'Launch Your Business'],
+    'business-2': ['Digital Marketing Overview', 'SEO Fundamentals', 'Content Marketing', 'Social Media Strategy', 'Email Marketing', 'PPC Advertising', 'Analytics & Metrics', 'Conversion Optimization', 'Marketing Automation', 'Influencer Marketing', 'Brand Strategy', 'Marketing Campaign'],
+    'business-3': ['Financial Basics', 'Budgeting Essentials', 'Cash Flow Management', 'Financial Statements', 'Investment Fundamentals', 'Risk Management', 'Tax Planning', 'Retirement Planning', 'Debt Management', 'Financial Software', 'Financial Forecasting', 'Financial Plan'],
+    'business-4': ['Sales Fundamentals', 'Understanding Customers', 'Sales Process', 'Prospecting Techniques', 'Qualification Methods', 'Presentation Skills', 'Handling Objections', 'Negotiation Tactics', 'Closing Techniques', 'Relationship Selling', 'Sales Technology', 'Sales Mastery'],
+    'business-5': ['Project Management Basics', 'Project Lifecycle', 'Scope & Requirements', 'Time Management', 'Resource Planning', 'Budgeting Projects', 'Risk Management', 'Communication Planning', 'Agile Methodology', 'Scrum Framework', 'PM Tools', 'Project Delivery'],
+    'business-6': ['Strategy Fundamentals', 'SWOT Analysis', 'Competitive Analysis', 'Business Models', 'Value Proposition', 'Strategic Planning', 'Execution Strategy', 'Performance Metrics', 'Innovation Strategy', 'Growth Strategy', 'Strategic Leadership', 'Strategy Implementation'],
+    'business-7': ['E-commerce Basics', 'Online Store Setup', 'Product Selection', 'Pricing Strategies', 'Payment Processing', 'Shipping & Fulfillment', 'Customer Service', 'Marketing Your Store', 'SEO for E-commerce', 'Conversion Optimization', 'Analytics & Data', 'Scaling E-commerce'],
+    'leadership-1': ['Leadership Fundamentals', 'Team Building', 'Motivation Theories', 'Communication Skills', 'Delegation', 'Performance Management', 'Feedback Techniques', 'Conflict Management', 'Team Dynamics', 'Leading Meetings', 'Recognition & Rewards', 'Team Excellence'],
+    'leadership-2': ['Decision Making Process', 'Critical Thinking', 'Problem Identification', 'Analytical Tools', 'Creative Solutions', 'Risk Assessment', 'Data-Driven Decisions', 'Ethical Decisions', 'Group Decision Making', 'Implementation', 'Learning from Decisions', 'Decision Mastery'],
+    'leadership-3': ['Understanding Change', 'Change Models', 'Stakeholder Analysis', 'Communication Strategy', 'Resistance Management', 'Leading Through Change', 'Cultural Transformation', 'Change Implementation', 'Sustaining Change', 'Agility', 'Innovation', 'Change Leadership'],
+    'leadership-4': ['Coaching Basics', 'Mentoring vs Coaching', 'Active Listening', 'Powerful Questions', 'Goal Setting', 'Feedback Models', 'Development Plans', 'Accountability', 'Growth Mindset', 'Career Guidance', 'Building Trust', 'Coaching Mastery'],
+    'leadership-5': ['Strategic Thinking Basics', 'Systems Thinking', 'Long-term Vision', 'Scenario Planning', 'Strategic Analysis', 'Pattern Recognition', 'Strategic Innovation', 'Decision Frameworks', 'Strategic Communication', 'Implementation Planning', 'Strategic Agility', 'Strategic Leadership'],
+    'leadership-6': ['Understanding Delegation', 'Choosing What to Delegate', 'Selecting People', 'Clear Instructions', 'Authority Transfer', 'Monitoring Progress', 'Empowerment Principles', 'Trust Building', 'Accountability', 'Feedback & Support', 'Development Through Delegation', 'Delegation Mastery'],
+    'leadership-7': ['Remote Work Fundamentals', 'Virtual Communication', 'Building Trust Remotely', 'Managing Time Zones', 'Technology Tools', 'Virtual Meetings', 'Remote Culture', 'Performance Management', 'Collaboration Tools', 'Work-Life Balance', 'Remote Engagement', 'Leading Remotely'],
+    'health-1': ['Nutrition Basics', 'Macronutrients', 'Micronutrients', 'Hydration', 'Reading Labels', 'Meal Planning', 'Healthy Eating Habits', 'Special Diets', 'Supplements', 'Nutrition Myths', 'Balanced Diet', 'Nutrition Plan'],
+    'health-2': ['Fitness Fundamentals', 'Strength Training Basics', 'Cardiovascular Exercise', 'Flexibility & Mobility', 'Workout Planning', 'Progressive Overload', 'Recovery & Rest', 'Injury Prevention', 'Home Workouts', 'Gym Equipment', 'Tracking Progress', 'Fitness Goals'],
+    'health-3': ['Mental Health Basics', 'Mindfulness Introduction', 'Meditation Techniques', 'Stress Awareness', 'Anxiety Management', 'Depression Understanding', 'Emotional Regulation', 'Self-Care Practices', 'Building Resilience', 'Seeking Help', 'Mindful Living', 'Mental Wellness'],
+    'health-4': ['Understanding Stress', 'Stress Identification', 'Breathing Techniques', 'Time Management', 'Boundaries', 'Relaxation Methods', 'Cognitive Strategies', 'Physical Activity', 'Social Support', 'Lifestyle Changes', 'Stress Prevention', 'Stress Mastery'],
+    'health-5': ['Sleep Science', 'Sleep Cycles', 'Sleep Hygiene', 'Bedroom Environment', 'Pre-Sleep Routine', 'Managing Insomnia', 'Napping Strategies', 'Sleep Disorders', 'Technology & Sleep', 'Diet & Sleep', 'Exercise & Sleep', 'Sleep Optimization'],
+    'health-6': ['Yoga Basics', 'Basic Poses', 'Breathing Practices', 'Meditation Introduction', 'Sun Salutations', 'Standing Poses', 'Seated Poses', 'Balancing Poses', 'Restorative Yoga', 'Yoga Philosophy', 'Daily Practice', 'Yoga Lifestyle'],
+    'health-7': ['Habit Formation Science', 'Identifying Habits', 'Habit Loop', 'Trigger Management', 'Small Steps', 'Consistency', 'Tracking Progress', 'Overcoming Obstacles', 'Environment Design', 'Accountability', 'Habit Stacking', 'Lasting Change'],
+    'language-1': ['English Basics', 'Grammar Fundamentals', 'Sentence Structure', 'Common Tenses', 'Vocabulary Building', 'Reading Comprehension', 'Writing Skills', 'Conversation Practice', 'Pronunciation', 'Idioms & Phrases', 'Business English', 'Fluency Practice'],
+    'language-2': ['Spanish Alphabet', 'Basic Greetings', 'Essential Vocabulary', 'Present Tense', 'Common Verbs', 'Asking Questions', 'Numbers & Time', 'Food & Dining', 'Travel Phrases', 'Past Tense', 'Future Tense', 'Conversation Practice'],
+    'language-3': ['French Basics', 'Pronunciation', 'Essential Phrases', 'Present Tense', 'Common Verbs', 'Articles & Nouns', 'Adjectives', 'Food Vocabulary', 'Travel French', 'Past Tense', 'Future Tense', 'French Conversation'],
+    'language-4': ['Mandarin Basics', 'Pinyin System', 'Tones Practice', 'Basic Characters', 'Greetings', 'Numbers & Counting', 'Common Phrases', 'Family Terms', 'Food Vocabulary', 'Directions', 'Shopping', 'Chinese Conversation'],
+    'language-5': ['German Basics', 'Pronunciation', 'Articles & Cases', 'Present Tense', 'Common Verbs', 'Essential Vocabulary', 'Numbers & Time', 'Food & Dining', 'Travel German', 'Past Tense', 'Word Order', 'German Conversation'],
+    'language-6': ['Arabic Script', 'Pronunciation', 'Basic Greetings', 'Essential Phrases', 'Present Tense', 'Common Verbs', 'Numbers', 'Family Terms', 'Food Vocabulary', 'Directions', 'Cultural Context', 'Arabic Conversation'],
+    'language-7': ['ASL Basics', 'Fingerspelling', 'Basic Signs', 'Greetings', 'Family Signs', 'Numbers', 'Colors', 'Food Signs', 'Questions', 'Emotions', 'Conversation Practice', 'Deaf Culture'],
+    'personal-1': ['Productivity Basics', 'Time Audit', 'Goal Setting', 'Priority Matrix', 'Time Blocking', 'Eliminating Distractions', 'Energy Management', 'Productivity Tools', 'Habit Formation', 'Work-Life Balance', 'Review Systems', 'Productivity Mastery'],
+    'personal-2': ['Goal Setting Basics', 'SMART Goals', 'Vision Creation', 'Action Planning', 'Overcoming Obstacles', 'Accountability', 'Tracking Progress', 'Staying Motivated', 'Celebrating Wins', 'Adjusting Goals', 'Long-term Planning', 'Goal Achievement'],
+    'personal-3': ['Critical Thinking Basics', 'Logic & Reasoning', 'Identifying Assumptions', 'Evaluating Evidence', 'Cognitive Biases', 'Problem Analysis', 'Decision Making', 'Creative Thinking', 'Argument Construction', 'Skeptical Thinking', 'Systems Thinking', 'Critical Mastery'],
+    'personal-4': ['Understanding Confidence', 'Identifying Limiting Beliefs', 'Positive Self-Talk', 'Body Language', 'Facing Fears', 'Building Competence', 'Celebration Wins', 'Assertiveness', 'Handling Rejection', 'Social Confidence', 'Maintaining Confidence', 'Confidence Mastery'],
+    'personal-5': ['How Memory Works', 'Attention & Focus', 'Memory Techniques', 'Spaced Repetition', 'Mind Mapping', 'Note-taking Methods', 'Speed Reading', 'Memory Palace', 'Learning Styles', 'Active Recall', 'Practical Application', 'Memory Mastery'],
+    'personal-6': ['Career Assessment', 'Skills Inventory', 'Career Goals', 'Personal Brand', 'Resume Building', 'Interview Skills', 'Networking', 'Career Transitions', 'Continuous Learning', 'Leadership Development', 'Work-Life Integration', 'Career Strategy'],
+    'personal-7': ['Financial Basics', 'Budgeting', 'Saving Strategies', 'Debt Management', 'Credit Understanding', 'Investment Basics', 'Retirement Planning', 'Insurance', 'Tax Basics', 'Estate Planning', 'Financial Goals', 'Financial Independence']
+  };
+  
+  const titles = lessonTitles[currentCourseId] || Array.from({ length: course.lessons }, (_, i) => `Lesson ${i + 1}`);
+  
+  const lessons = Array.from({ length: course.lessons }, (_, i) => ({
+    index: i,
+    title: titles[i] || `Lesson ${i + 1}`,
+    duration: '30 min',
+    completed: lessonProgress.some(lp => lp.lessonIndex === i && lp.completed)
+  }));
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="course-detail">
+      <div class="back-button" onclick="navigateTo('${isEnrolled ? 'learning' : 'explore'}')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to ${isEnrolled ? 'My Learning' : 'Courses'}
+      </div>
+      
+      <div class="course-detail-card">
+        <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;flex-wrap:wrap;">
+          <div style="width:100px;height:100px;background:${course.gradient};border-radius:1rem;display:flex;align-items:center;justify-content:center;">
+            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">${course.icon}</svg>
+          </div>
+          <div style="flex:1;min-width:250px;">
+            <div style="display:inline-block;padding:0.375rem 0.75rem;background:var(--bg-tertiary);border-radius:0.5rem;font-size:0.875rem;font-weight:600;margin-bottom:0.75rem;">${category}</div>
+            <h1 style="font-size:2rem;margin-bottom:0.5rem;">${course.title}</h1>
+            <div style="display:flex;gap:1.5rem;flex-wrap:wrap;color:var(--text-secondary);font-size:0.875rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                ${course.duration}
+              </div>
+              <div style="display:flex;align-items:center;gap:0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                ${course.lessons} lessons
+              </div>
+              <div class="course-difficulty difficulty-${course.difficulty.toLowerCase()}" style="margin:0;">${course.difficulty}</div>
+            </div>
+          </div>
+        </div>
+        
+        ${isEnrolled ? `
+          <div class="course-progress" style="margin-bottom:2rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+              <span style="font-weight:600;">Your Progress</span>
+              <span style="font-weight:600;color:var(--accent-primary);">${progress}%</span>
+            </div>
+            <div class="progress-bar" style="height:12px;">
+              <div class="progress-fill" style="width:${progress}%"></div>
+            </div>
+          </div>
+        ` : ''}
+        
+        <h2 style="font-size:1.5rem;margin-bottom:1rem;">Course Curriculum</h2>
+        <div style="border:1px solid var(--border-color);border-radius:0.75rem;overflow:hidden;">
+          ${lessons.map(lesson => `
+            <div class="lesson-item" onclick="${isEnrolled ? `navigateTo('lesson-reader', {courseId: '${currentCourseId}', lessonIndex: ${lesson.index}})` : `showToast('Please enroll to access lessons')`}">
+              <div class="lesson-checkbox ${lesson.completed ? 'completed' : ''}">
+                ${lesson.completed ? '✓' : ''}
+              </div>
+              <div class="lesson-info">
+                <div class="lesson-title">${lesson.title}</div>
+                <div class="lesson-duration">${lesson.duration}</div>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          `).join('')}
+        </div>
+        
+        ${!isEnrolled ? `
+          <button class="btn btn-primary" style="width:100%;margin-top:2rem;padding:1rem;font-size:1.1rem;" onclick="showEnrollModal('${currentCourseId}')">
+            Enroll in This Course
+          </button>
+        ` : progress === 100 ? `
+          <button class="btn btn-primary" style="width:100%;margin-top:2rem;padding:1rem;font-size:1.1rem;" onclick="downloadCertificate('${currentCourseId}')">
+            Download Certificate
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderLessonReader() {
+  const course = findCourseById(currentCourseId);
+  const lessonProgress = getLessonProgress(currentCourseId);
+  const currentLesson = lessonProgress.find(lp => lp.lessonIndex === currentLessonIndex);
+  const isCompleted = currentLesson && currentLesson.completed;
+  
+  const lessonTitles = {
+    'tech-1': ['Introduction to Cybersecurity', 'Network Security Basics', 'Cryptography Fundamentals', 'Ethical Hacking', 'Security Protocols', 'Threat Analysis', 'Incident Response', 'Security Tools', 'Penetration Testing', 'Security Compliance', 'Cloud Security', 'Final Project'],
+    'tech-2': ['HTML & CSS Fundamentals', 'JavaScript Essentials', 'React Framework', 'Node.js & Express', 'Database Design', 'RESTful APIs', 'Authentication', 'Deployment Strategies', 'Testing & Debugging', 'Performance Optimization', 'DevOps Basics', 'Full Stack Project'],
+    'tech-3': ['Mobile Development Overview', 'React Native Setup', 'UI Components', 'Navigation & Routing', 'State Management', 'API Integration', 'Native Features', 'Push Notifications', 'App Store Deployment', 'Performance Tuning', 'Testing Mobile Apps', 'Final App Project'],
+    'tech-4': ['AWS Introduction', 'EC2 & Compute', 'S3 & Storage', 'RDS & Databases', 'Lambda Functions', 'VPC & Networking', 'IAM & Security', 'CloudFormation', 'Auto Scaling', 'Monitoring & CloudWatch', 'Cost Optimization', 'AWS Certification Prep'],
+    'tech-5': ['Python for Data Science', 'NumPy & Pandas', 'Data Visualization', 'Statistics Fundamentals', 'Machine Learning Intro', 'Supervised Learning', 'Unsupervised Learning', 'Neural Networks', 'Deep Learning', 'Model Evaluation', 'Real-world Projects', 'ML Deployment'],
+    'tech-6': ['Blockchain Basics', 'Cryptocurrency Fundamentals', 'Ethereum & Web3', 'Smart Contract Development', 'Solidity Programming', 'DApp Architecture', 'Token Standards', 'Security Best Practices', 'Testing Smart Contracts', 'DeFi Concepts', 'NFT Development', 'Blockchain Projects'],
+    'tech-7': ['DevOps Principles', 'Version Control & Git', 'CI/CD Fundamentals', 'Jenkins Setup', 'Docker Containers', 'Kubernetes Orchestration', 'Infrastructure as Code', 'Monitoring & Logging', 'Automated Testing', 'Deployment Pipelines', 'Cloud DevOps', 'DevOps Best Practices'],
+    'creative-1': ['Design Principles', 'Color Theory', 'Typography Mastery', 'Adobe Photoshop', 'Adobe Illustrator', 'Logo Design', 'Brand Identity', 'Layout Design', 'Digital Illustration', 'Photo Editing', 'Portfolio Building', 'Design Projects'],
+    'creative-2': ['UX Research Methods', 'User Personas', 'Wireframing', 'Prototyping Tools', 'UI Design Principles', 'Design Systems', 'Usability Testing', 'Figma Mastery', 'Responsive Design', 'Accessibility', 'Design Handoff', 'Portfolio Projects'],
+    'creative-3': ['Camera Fundamentals', 'Exposure Triangle', 'Composition Techniques', 'Lighting Basics', 'Portrait Photography', 'Landscape Photography', 'Photo Editing', 'Adobe Lightroom', 'Color Grading', 'Studio Photography', 'Street Photography', 'Photography Portfolio'],
+    'creative-4': ['Video Production Basics', 'Camera Operation', 'Storyboarding', 'Filming Techniques', 'Adobe Premiere Pro', 'Video Editing', 'Color Correction', 'Audio Production', 'Motion Graphics', 'Visual Effects', 'YouTube Production', 'Video Portfolio'],
+    'creative-5': ['Writing Fundamentals', 'Character Development', 'Plot Structure', 'Dialogue Writing', 'Show vs Tell', 'World Building', 'Narrative Voice', 'Editing & Revision', 'Genre Fiction', 'Creative Nonfiction', 'Publishing Paths', 'Writing Portfolio'],
+    'creative-6': ['Music Theory Basics', 'DAW Introduction', 'Beat Making', 'Melody & Harmony', 'Mixing Fundamentals', 'Audio Effects', 'Song Structure', 'Sound Design', 'Mastering Basics', 'Music Production Tools', 'Genre Production', 'Music Portfolio'],
+    'creative-7': ['3D Modeling Basics', 'Blender Interface', 'Modeling Techniques', 'Texturing & Materials', 'Lighting in 3D', 'Animation Principles', 'Rigging Characters', 'Keyframe Animation', 'Rendering', 'Compositing', 'VFX Basics', '3D Portfolio Project'],
+    'social-1': ['Public Speaking Basics', 'Voice & Articulation', 'Body Language', 'Presentation Structure', 'Overcoming Anxiety', 'Engaging Your Audience', 'Storytelling Techniques', 'Visual Aids', 'Q&A Handling', 'Persuasive Speaking', 'Virtual Presentations', 'Final Presentation'],
+    'social-2': ['Understanding Emotions', 'Self-Awareness', 'Self-Regulation', 'Motivation Techniques', 'Empathy Development', 'Social Skills', 'Relationship Management', 'Conflict Resolution', 'Emotional Intelligence at Work', 'Stress Management', 'Building Resilience', 'EQ Practice'],
+    'social-3': ['Networking Fundamentals', 'Building Rapport', 'Conversation Skills', 'LinkedIn Mastery', 'Professional Events', 'Follow-up Strategies', 'Building Relationships', 'Mentorship', 'Personal Branding', 'Maintaining Connections', 'Networking Online', 'Relationship Building'],
+    'social-4': ['Understanding Conflict', 'Communication in Conflict', 'Active Listening', 'Emotional Control', 'Negotiation Basics', 'Finding Common Ground', 'Mediation Techniques', 'Conflict Styles', 'Workplace Conflicts', 'De-escalation', 'Forgiveness', 'Resolution Practice'],
+    'social-5': ['Listening Fundamentals', 'Removing Barriers', 'Nonverbal Cues', 'Empathetic Listening', 'Reflective Listening', 'Questioning Techniques', 'Paraphrasing', 'Listening in Groups', 'Digital Listening', 'Cultural Listening', 'Feedback Skills', 'Listening Practice'],
+    'social-6': ['Body Language Basics', 'Facial Expressions', 'Posture & Presence', 'Hand Gestures', 'Eye Contact', 'Personal Space', 'Cultural Differences', 'Reading Others', 'Power Poses', 'Authenticity', 'First Impressions', 'Body Language Mastery'],
+    'social-7': ['Cultural Awareness', 'Communication Styles', 'Language Barriers', 'Nonverbal Differences', 'Cultural Etiquette', 'Stereotypes & Bias', 'Adapting Messages', 'Global Business', 'Cross-Cultural Teams', 'Conflict Across Cultures', 'Cultural Intelligence', 'Global Communication'],
+    'business-1': ['Entrepreneurial Mindset', 'Business Ideas', 'Market Research', 'Business Planning', 'Funding Options', 'Legal Structures', 'Marketing Basics', 'Sales Strategies', 'Financial Management', 'Scaling Your Business', 'Leadership Skills', 'Launch Your Business'],
+    'business-2': ['Digital Marketing Overview', 'SEO Fundamentals', 'Content Marketing', 'Social Media Strategy', 'Email Marketing', 'PPC Advertising', 'Analytics & Metrics', 'Conversion Optimization', 'Marketing Automation', 'Influencer Marketing', 'Brand Strategy', 'Marketing Campaign'],
+    'business-3': ['Financial Basics', 'Budgeting Essentials', 'Cash Flow Management', 'Financial Statements', 'Investment Fundamentals', 'Risk Management', 'Tax Planning', 'Retirement Planning', 'Debt Management', 'Financial Software', 'Financial Forecasting', 'Financial Plan'],
+    'business-4': ['Sales Fundamentals', 'Understanding Customers', 'Sales Process', 'Prospecting Techniques', 'Qualification Methods', 'Presentation Skills', 'Handling Objections', 'Negotiation Tactics', 'Closing Techniques', 'Relationship Selling', 'Sales Technology', 'Sales Mastery'],
+    'business-5': ['Project Management Basics', 'Project Lifecycle', 'Scope & Requirements', 'Time Management', 'Resource Planning', 'Budgeting Projects', 'Risk Management', 'Communication Planning', 'Agile Methodology', 'Scrum Framework', 'PM Tools', 'Project Delivery'],
+    'business-6': ['Strategy Fundamentals', 'SWOT Analysis', 'Competitive Analysis', 'Business Models', 'Value Proposition', 'Strategic Planning', 'Execution Strategy', 'Performance Metrics', 'Innovation Strategy', 'Growth Strategy', 'Strategic Leadership', 'Strategy Implementation'],
+    'business-7': ['E-commerce Basics', 'Online Store Setup', 'Product Selection', 'Pricing Strategies', 'Payment Processing', 'Shipping & Fulfillment', 'Customer Service', 'Marketing Your Store', 'SEO for E-commerce', 'Conversion Optimization', 'Analytics & Data', 'Scaling E-commerce'],
+    'leadership-1': ['Leadership Fundamentals', 'Team Building', 'Motivation Theories', 'Communication Skills', 'Delegation', 'Performance Management', 'Feedback Techniques', 'Conflict Management', 'Team Dynamics', 'Leading Meetings', 'Recognition & Rewards', 'Team Excellence'],
+    'leadership-2': ['Decision Making Process', 'Critical Thinking', 'Problem Identification', 'Analytical Tools', 'Creative Solutions', 'Risk Assessment', 'Data-Driven Decisions', 'Ethical Decisions', 'Group Decision Making', 'Implementation', 'Learning from Decisions', 'Decision Mastery'],
+    'leadership-3': ['Understanding Change', 'Change Models', 'Stakeholder Analysis', 'Communication Strategy', 'Resistance Management', 'Leading Through Change', 'Cultural Transformation', 'Change Implementation', 'Sustaining Change', 'Agility', 'Innovation', 'Change Leadership'],
+    'leadership-4': ['Coaching Basics', 'Mentoring vs Coaching', 'Active Listening', 'Powerful Questions', 'Goal Setting', 'Feedback Models', 'Development Plans', 'Accountability', 'Growth Mindset', 'Career Guidance', 'Building Trust', 'Coaching Mastery'],
+    'leadership-5': ['Strategic Thinking Basics', 'Systems Thinking', 'Long-term Vision', 'Scenario Planning', 'Strategic Analysis', 'Pattern Recognition', 'Strategic Innovation', 'Decision Frameworks', 'Strategic Communication', 'Implementation Planning', 'Strategic Agility', 'Strategic Leadership'],
+    'leadership-6': ['Understanding Delegation', 'Choosing What to Delegate', 'Selecting People', 'Clear Instructions', 'Authority Transfer', 'Monitoring Progress', 'Empowerment Principles', 'Trust Building', 'Accountability', 'Feedback & Support', 'Development Through Delegation', 'Delegation Mastery'],
+    'leadership-7': ['Remote Work Fundamentals', 'Virtual Communication', 'Building Trust Remotely', 'Managing Time Zones', 'Technology Tools', 'Virtual Meetings', 'Remote Culture', 'Performance Management', 'Collaboration Tools', 'Work-Life Balance', 'Remote Engagement', 'Leading Remotely'],
+    'health-1': ['Nutrition Basics', 'Macronutrients', 'Micronutrients', 'Hydration', 'Reading Labels', 'Meal Planning', 'Healthy Eating Habits', 'Special Diets', 'Supplements', 'Nutrition Myths', 'Balanced Diet', 'Nutrition Plan'],
+    'health-2': ['Fitness Fundamentals', 'Strength Training Basics', 'Cardiovascular Exercise', 'Flexibility & Mobility', 'Workout Planning', 'Progressive Overload', 'Recovery & Rest', 'Injury Prevention', 'Home Workouts', 'Gym Equipment', 'Tracking Progress', 'Fitness Goals'],
+    'health-3': ['Mental Health Basics', 'Mindfulness Introduction', 'Meditation Techniques', 'Stress Awareness', 'Anxiety Management', 'Depression Understanding', 'Emotional Regulation', 'Self-Care Practices', 'Building Resilience', 'Seeking Help', 'Mindful Living', 'Mental Wellness'],
+    'health-4': ['Understanding Stress', 'Stress Identification', 'Breathing Techniques', 'Time Management', 'Boundaries', 'Relaxation Methods', 'Cognitive Strategies', 'Physical Activity', 'Social Support', 'Lifestyle Changes', 'Stress Prevention', 'Stress Mastery'],
+    'health-5': ['Sleep Science', 'Sleep Cycles', 'Sleep Hygiene', 'Bedroom Environment', 'Pre-Sleep Routine', 'Managing Insomnia', 'Napping Strategies', 'Sleep Disorders', 'Technology & Sleep', 'Diet & Sleep', 'Exercise & Sleep', 'Sleep Optimization'],
+    'health-6': ['Yoga Basics', 'Basic Poses', 'Breathing Practices', 'Meditation Introduction', 'Sun Salutations', 'Standing Poses', 'Seated Poses', 'Balancing Poses', 'Restorative Yoga', 'Yoga Philosophy', 'Daily Practice', 'Yoga Lifestyle'],
+    'health-7': ['Habit Formation Science', 'Identifying Habits', 'Habit Loop', 'Trigger Management', 'Small Steps', 'Consistency', 'Tracking Progress', 'Overcoming Obstacles', 'Environment Design', 'Accountability', 'Habit Stacking', 'Lasting Change'],
+    'language-1': ['English Basics', 'Grammar Fundamentals', 'Sentence Structure', 'Common Tenses', 'Vocabulary Building', 'Reading Comprehension', 'Writing Skills', 'Conversation Practice', 'Pronunciation', 'Idioms & Phrases', 'Business English', 'Fluency Practice'],
+    'language-2': ['Spanish Alphabet', 'Basic Greetings', 'Essential Vocabulary', 'Present Tense', 'Common Verbs', 'Asking Questions', 'Numbers & Time', 'Food & Dining', 'Travel Phrases', 'Past Tense', 'Future Tense', 'Conversation Practice'],
+    'language-3': ['French Basics', 'Pronunciation', 'Essential Phrases', 'Present Tense', 'Common Verbs', 'Articles & Nouns', 'Adjectives', 'Food Vocabulary', 'Travel French', 'Past Tense', 'Future Tense', 'French Conversation'],
+    'language-4': ['Mandarin Basics', 'Pinyin System', 'Tones Practice', 'Basic Characters', 'Greetings', 'Numbers & Counting', 'Common Phrases', 'Family Terms', 'Food Vocabulary', 'Directions', 'Shopping', 'Chinese Conversation'],
+    'language-5': ['German Basics', 'Pronunciation', 'Articles & Cases', 'Present Tense', 'Common Verbs', 'Essential Vocabulary', 'Numbers & Time', 'Food & Dining', 'Travel German', 'Past Tense', 'Word Order', 'German Conversation'],
+    'language-6': ['Arabic Script', 'Pronunciation', 'Basic Greetings', 'Essential Phrases', 'Present Tense', 'Common Verbs', 'Numbers', 'Family Terms', 'Food Vocabulary', 'Directions', 'Cultural Context', 'Arabic Conversation'],
+    'language-7': ['ASL Basics', 'Fingerspelling', 'Basic Signs', 'Greetings', 'Family Signs', 'Numbers', 'Colors', 'Food Signs', 'Questions', 'Emotions', 'Conversation Practice', 'Deaf Culture'],
+    'personal-1': ['Productivity Basics', 'Time Audit', 'Goal Setting', 'Priority Matrix', 'Time Blocking', 'Eliminating Distractions', 'Energy Management', 'Productivity Tools', 'Habit Formation', 'Work-Life Balance', 'Review Systems', 'Productivity Mastery'],
+    'personal-2': ['Goal Setting Basics', 'SMART Goals', 'Vision Creation', 'Action Planning', 'Overcoming Obstacles', 'Accountability', 'Tracking Progress', 'Staying Motivated', 'Celebrating Wins', 'Adjusting Goals', 'Long-term Planning', 'Goal Achievement'],
+    'personal-3': ['Critical Thinking Basics', 'Logic & Reasoning', 'Identifying Assumptions', 'Evaluating Evidence', 'Cognitive Biases', 'Problem Analysis', 'Decision Making', 'Creative Thinking', 'Argument Construction', 'Skeptical Thinking', 'Systems Thinking', 'Critical Mastery'],
+    'personal-4': ['Understanding Confidence', 'Identifying Limiting Beliefs', 'Positive Self-Talk', 'Body Language', 'Facing Fears', 'Building Competence', 'Celebration Wins', 'Assertiveness', 'Handling Rejection', 'Social Confidence', 'Maintaining Confidence', 'Confidence Mastery'],
+    'personal-5': ['How Memory Works', 'Attention & Focus', 'Memory Techniques', 'Spaced Repetition', 'Mind Mapping', 'Note-taking Methods', 'Speed Reading', 'Memory Palace', 'Learning Styles', 'Active Recall', 'Practical Application', 'Memory Mastery'],
+    'personal-6': ['Career Assessment', 'Skills Inventory', 'Career Goals', 'Personal Brand', 'Resume Building', 'Interview Skills', 'Networking', 'Career Transitions', 'Continuous Learning', 'Leadership Development', 'Work-Life Integration', 'Career Strategy'],
+    'personal-7': ['Financial Basics', 'Budgeting', 'Saving Strategies', 'Debt Management', 'Credit Understanding', 'Investment Basics', 'Retirement Planning', 'Insurance', 'Tax Basics', 'Estate Planning', 'Financial Goals', 'Financial Independence']
+  };
+  
+  const titles = lessonTitles[currentCourseId] || [];
+  const lessonTitle = titles[currentLessonIndex] || `Lesson ${currentLessonIndex + 1}`;
+  
+  const lessonContent = getLessonContent(currentCourseId, currentLessonIndex, lessonTitle);
+  
+  document.getElementById('mainContent').innerHTML = `
+    <div class="lesson-reader">
+      <div class="back-button" onclick="navigateTo('course-detail', {courseId: '${currentCourseId}'})">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Course
+      </div>
+      
+      <div class="lesson-nav">
+        <button ${currentLessonIndex === 0 ? 'disabled' : ''} onclick="navigateTo('lesson-reader', {courseId: '${currentCourseId}', lessonIndex: ${currentLessonIndex - 1}})">
+          ← Previous
+        </button>
+        <button class="btn-primary" id="completeBtn" onclick="toggleLessonComplete()">
+          ${isCompleted ? '✓ Completed' : 'Mark as Complete'}
+        </button>
+        <button ${currentLessonIndex >= course.lessons - 1 ? 'disabled' : ''} onclick="navigateTo('lesson-reader', {courseId: '${currentCourseId}', lessonIndex: ${currentLessonIndex + 1}})">
+          Next →
+        </button>
+      </div>
+      
+      <div class="lesson-content-wrapper">
+        ${lessonContent}
+      </div>
+      
+      <div class="lesson-nav" style="margin-top:2rem;">
+        <button ${currentLessonIndex === 0 ? 'disabled' : ''} onclick="navigateTo('lesson-reader', {courseId: '${currentCourseId}', lessonIndex: ${currentLessonIndex - 1}})">
+          ← Previous
+        </button>
+        <button class="btn-primary" onclick="toggleLessonComplete()">
+          ${isCompleted ? '✓ Completed' : 'Mark as Complete'}
+        </button>
+        <button ${currentLessonIndex >= course.lessons - 1 ? 'disabled' : ''} onclick="navigateTo('lesson-reader', {courseId: '${currentCourseId}', lessonIndex: ${currentLessonIndex + 1}})">
+          Next →
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function getLessonContent(courseId, lessonIndex, lessonTitle) {
+  // Sample content - in a real app, this would come from a database or API
+  const contentMap = {
+    0: `<h1>${lessonTitle}</h1>
+        <h2>Introduction</h2>
+        <p>Welcome to the first lesson! This module will introduce you to the fundamental concepts and provide a solid foundation for the rest of the course.</p>
+        <h2>Core Principles</h2>
+        <p>Understanding the basics is crucial. In this lesson, we'll cover:</p>
+        <ul>
+          <li><strong>Foundation Concepts:</strong> The building blocks you need to master</li>
+          <li><strong>Terminology:</strong> Key terms and definitions you'll encounter</li>
+          <li><strong>Industry Context:</strong> Why these concepts matter in real-world applications</li>
+        </ul>
+        <h3>Getting Started</h3>
+        <p>The journey of mastery begins with understanding the fundamentals. Take your time with this material, as it forms the basis for everything that follows.</p>
+        <h2>Key Takeaways</h2>
+        <ol>
+          <li>Understand the historical context and evolution of the field</li>
+          <li>Recognize the core terminology and concepts</li>
+          <li>Identify real-world applications and use cases</li>
+        </ol>`,
+    1: `<h1>${lessonTitle}</h1>
+        <h2>Building on the Foundation</h2>
+        <p>Now that you've mastered the basics, we'll dive deeper into more advanced concepts and techniques.</p>
+        <h2>Advanced Concepts</h2>
+        <p>This lesson explores intermediate-level topics that will expand your understanding:</p>
+        <ul>
+          <li><strong>Technical Deep Dive:</strong> Detailed examination of key mechanisms</li>
+          <li><strong>Best Practices:</strong> Industry-standard approaches and methodologies</li>
+          <li><strong>Common Patterns:</strong> Recurring solutions to typical problems</li>
+        </ul>
+        <h3>Practical Application</h3>
+        <p>Theory becomes powerful when applied. We'll examine real-world scenarios where these concepts are essential.</p>
+        <h2>Exercise</h2>
+        <p>Try applying what you've learned by working through a practical example. Consider how these techniques can solve problems in your own projects.</p>`,
+    2: `<h1>${lessonTitle}</h1>
+        <h2>Mastering the Essentials</h2>
+        <p>This lesson focuses on developing practical skills you can immediately use in real-world scenarios.</p>
+        <h2>Technical Skills</h2>
+        <p>You'll develop hands-on expertise in:</p>
+        <ul>
+          <li><strong>Core Techniques:</strong> Essential methods every practitioner must know</li>
+          <li><strong>Tools and Resources:</strong> Software, platforms, and utilities that enhance productivity</li>
+          <li><strong>Workflow Optimization:</strong> Strategies for efficient and effective work</li>
+        </ul>
+        <h3>Step-by-Step Guide</h3>
+        <p>Follow this structured approach to build competency:</p>
+        <ol>
+          <li>Start with simple exercises to build confidence</li>
+          <li>Progress to more complex challenges gradually</li>
+          <li>Reflect on your process and identify areas for improvement</li>
+        </ol>
+        <h2>Pro Tips</h2>
+        <p><strong>💡 Expert Insight:</strong> The difference between good and great practitioners often comes down to attention to detail and consistent practice.</p>`,
+    3: `<h1>${lessonTitle}</h1>
+        <h2>Advanced Techniques</h2>
+        <p>As you progress, you'll encounter more sophisticated approaches that professionals use daily.</p>
+        <h2>Professional Methods</h2>
+        <p>This lesson covers advanced strategies including:</p>
+        <ul>
+          <li><strong>Optimization Techniques:</strong> How to improve efficiency and performance</li>
+          <li><strong>Scalability:</strong> Building solutions that grow with demands</li>
+          <li><strong>Troubleshooting:</strong> Systematic approaches to solving problems</li>
+        </ul>
+        <h3>Case Studies</h3>
+        <p>Examine how industry leaders apply these techniques to solve complex challenges. Learn from their successes and mistakes.</p>
+        <h2>Implementation Strategy</h2>
+        <p>Develop a systematic approach to applying what you've learned in your own work or projects.</p>`,
+    4: `<h1>${lessonTitle}</h1>
+        <h2>Integration and Application</h2>
+        <p>Learn how to combine different concepts and techniques to create comprehensive solutions.</p>
+        <h2>Holistic Approach</h2>
+        <p>Success requires integrating multiple skills:</p>
+        <ul>
+          <li><strong>System Thinking:</strong> Understanding how components work together</li>
+          <li><strong>Design Patterns:</strong> Proven solutions to recurring challenges</li>
+          <li><strong>Quality Assurance:</strong> Ensuring reliability and robustness</li>
+        </ul>
+        <h3>Real-World Projects</h3>
+        <p>Apply your knowledge to authentic scenarios that mirror professional environments.</p>
+        <h2>Collaboration</h2>
+        <p>Modern work often involves teams. Learn effective communication and collaboration strategies.</p>`,
+    5: `<h1>${lessonTitle}</h1>
+        <h2>Specialization and Depth</h2>
+        <p>Develop expertise in specific areas that align with your interests and career goals.</p>
+        <h2>Specialized Knowledge</h2>
+        <p>This lesson explores niche areas and advanced topics:</p>
+        <ul>
+          <li><strong>Domain Expertise:</strong> Deep knowledge in specific subfields</li>
+          <li><strong>Cutting-Edge Techniques:</strong> Latest innovations and methodologies</li>
+          <li><strong>Research and Development:</strong> Staying current with industry trends</li>
+        </ul>
+        <h3>Career Paths</h3>
+        <p>Understand how this specialization can shape your professional journey.</p>`,
+    6: `<h1>${lessonTitle}</h1>
+        <h2>Practical Implementation</h2>
+        <p>Transform theoretical knowledge into tangible results through hands-on projects.</p>
+        <h2>Project-Based Learning</h2>
+        <p>Build real solutions while mastering:</p>
+        <ul>
+          <li><strong>Planning:</strong> Breaking down complex projects into manageable tasks</li>
+          <li><strong>Execution:</strong> Implementing solutions efficiently</li>
+          <li><strong>Iteration:</strong> Refining and improving based on feedback</li>
+        </ul>
+        <h3>Portfolio Development</h3>
+        <p>Create work samples that demonstrate your skills to potential employers or clients.</p>`,
+    7: `<h1>${lessonTitle}</h1>
+        <h2>Optimization and Performance</h2>
+        <p>Learn techniques for maximizing efficiency, speed, and quality in your work.</p>
+        <h2>Performance Metrics</h2>
+        <p>Understand how to measure and improve:</p>
+        <ul>
+          <li><strong>Efficiency:</strong> Doing more with less time and resources</li>
+          <li><strong>Quality:</strong> Maintaining high standards consistently</li>
+          <li><strong>Sustainability:</strong> Building solutions that last</li>
+        </ul>
+        <h3>Benchmarking</h3>
+        <p>Compare your work against industry standards and identify improvement opportunities.</p>`,
+    8: `<h1>${lessonTitle}</h1>
+        <h2>Professional Practices</h2>
+        <p>Adopt the workflows and methodologies used by industry professionals.</p>
+        <h2>Industry Standards</h2>
+        <p>Master the conventions and practices that define professional work:</p>
+        <ul>
+          <li><strong>Documentation:</strong> Creating clear, maintainable records</li>
+          <li><strong>Version Control:</strong> Managing changes systematically</li>
+          <li><strong>Testing:</strong> Ensuring quality and reliability</li>
+        </ul>
+        <h3>Professional Development</h3>
+        <p>Continuous learning and improvement are hallmarks of successful professionals.</p>`,
+    9: `<h1>${lessonTitle}</h1>
+        <h2>Advanced Problem Solving</h2>
+        <p>Develop sophisticated approaches to tackling complex challenges.</p>
+        <h2>Analytical Thinking</h2>
+        <p>Strengthen your ability to:</p>
+        <ul>
+          <li><strong>Decompose Problems:</strong> Breaking challenges into solvable parts</li>
+          <li><strong>Pattern Recognition:</strong> Identifying similarities with known solutions</li>
+          <li><strong>Creative Solutions:</strong> Thinking outside conventional boundaries</li>
+        </ul>
+        <h3>Decision Making</h3>
+        <p>Learn frameworks for making sound decisions under pressure and uncertainty.</p>`,
+    10: `<h1>${lessonTitle}</h1>
+        <h2>Innovation and Creativity</h2>
+        <p>Push boundaries and explore new possibilities in your field.</p>
+        <h2>Creative Processes</h2>
+        <p>Cultivate innovation through:</p>
+        <ul>
+          <li><strong>Brainstorming:</strong> Generating diverse ideas without judgment</li>
+          <li><strong>Experimentation:</strong> Testing hypotheses and learning from results</li>
+          <li><strong>Risk Taking:</strong> Embracing calculated risks for potential rewards</li>
+        </ul>
+        <h3>Future Trends</h3>
+        <p>Stay ahead by understanding emerging trends and technologies shaping the future.</p>`,
+    11: `<h1>${lessonTitle}</h1>
+        <h2>Capstone Project</h2>
+        <p>Apply everything you've learned in a comprehensive final project that demonstrates mastery.</p>
+        <h2>Final Challenge</h2>
+        <p>Your capstone project should showcase:</p>
+        <ul>
+          <li><strong>Technical Proficiency:</strong> Mastery of core concepts and techniques</li>
+          <li><strong>Problem Solving:</strong> Ability to tackle complex, real-world challenges</li>
+          <li><strong>Professional Quality:</strong> Work that meets industry standards</li>
+        </ul>
+        <h3>Project Guidelines</h3>
+        <ol>
+          <li>Choose a project that genuinely interests you</li>
+          <li>Plan thoroughly before beginning implementation</li>
+          <li>Document your process and decisions</li>
+          <li>Seek feedback and iterate on your work</li>
+          <li>Present your final project professionally</li>
+        </ol>
+        <h2>Congratulations!</h2>
+        <p>Completing this course represents significant achievement. You've developed valuable skills that will serve you throughout your career. Remember that learning is a continuous journey—keep practicing, exploring, and growing.</p>
+        <p style="margin-top:2rem;padding:1.5rem;background:var(--bg-tertiary);border-left:4px solid var(--accent-primary);border-radius:0.5rem;">
+          <strong>🎉 Course Complete:</strong> You're now ready to apply these skills professionally. Continue building your portfolio and stay connected with the learning community!
+        </p>`
+  };
+  
+  return contentMap[lessonIndex] || contentMap[0];
+}
+
+async function toggleLessonComplete() {
+  const btn = document.getElementById('completeBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+  
+  const existingProgress = allRecords.find(r => 
+    r.type === 'lesson-progress' && 
+    r.courseId === currentCourseId && 
+    r.lessonIndex === currentLessonIndex
+  );
+  
+  if (existingProgress) {
+    existingProgress.completed = !existingProgress.completed;
+    const result = await window.dataSdk.update(existingProgress);
+    
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    
+    if (result.isOk) {
+      showToast(existingProgress.completed ? 'Lesson completed! 🎉' : 'Marked as incomplete');
+    } else {
+      showToast('Error updating lesson progress');
+    }
+  } else {
+    const result = await window.dataSdk.create({
+      type: 'lesson-progress',
+      courseId: currentCourseId,
+      lessonIndex: currentLessonIndex,
+      completed: true,
+      completedAt: new Date().toISOString()
+    });
+    
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    
+    if (result.isOk) {
+      showToast('Lesson completed! 🎉');
+      
+      const course = findCourseById(currentCourseId);
+      if (currentUser.autoPlay && currentLessonIndex < course.lessons - 1) {
+        setTimeout(() => {
+          navigateTo('lesson-reader', {courseId: currentCourseId, lessonIndex: currentLessonIndex + 1});
+        }, 1500);
+      }
+    } else {
+      showToast('Error updating lesson progress');
+    }
+  }
+}
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a5127cd4561ff34',t:'MTc2NDI0MTU3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
